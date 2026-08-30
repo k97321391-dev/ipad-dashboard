@@ -48,7 +48,7 @@
             border-bottom: 1px solid #E5E5EA;
             border-top-left-radius: 20px;
             border-top-right-radius: 20px;
-            flex-shrink: 0; /* 防止被擠壓 */
+            flex-shrink: 0; 
         }
         .header-left {
             font-size: 4.5rem;
@@ -70,14 +70,17 @@
             font-size: 1.05rem;
             color: #8E8E93;
         }
-        .header-right { text-align: right; }
+        .header-right { 
+            text-align: right; 
+            max-width: 45%; /* 限制右側寬度避免文字太長蓋過中間 */
+        }
         .header-right .temp-container {
             display: flex;
             align-items: center;
             justify-content: flex-end;
         }
         .header-right .current-emoji {
-            font-size: 3rem; /* 頂部天氣圖案放大 */
+            font-size: 3.5rem; /* 再稍微放大當前天氣圖案 */
             margin-right: 12px;
         }
         .header-right .temp {
@@ -87,17 +90,24 @@
             letter-spacing: -1px;
         }
         .header-right .weather-desc {
-            font-size: 1.15rem;
+            font-size: 1.1rem;
             font-weight: 600;
-            margin-top: 6px;
+            margin-top: 8px;
+            line-height: 1.3;
+            /* 允許換行，最多顯示兩行 */
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            white-space: normal;
         }
-        .header-right .humidity { font-size: 0.95rem; color: #8E8E93; margin-top: 2px;}
+        .header-right .humidity { font-size: 0.95rem; color: #8E8E93; margin-top: 4px;}
 
         .main-content {
             display: flex;
-            flex: 1; /* 佔滿剩餘空間 */
+            flex: 1; 
             border-bottom: 1px solid #E5E5EA;
-            min-height: 0; /* 舊版 flex 修正 */
+            min-height: 0; 
         }
         
         .section {
@@ -132,14 +142,14 @@
 
         .bus-list { 
             padding: 0 24px; 
-            overflow-y: auto; /* 內容過多時可局部滑動 */
+            overflow-y: auto; 
             flex: 1;
         }
         .bus-item {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 14px 0;
+            padding: 18px 0; /* 加大行距，讓版面看起來更舒適不空洞 */
             border-bottom: 1px solid #F2F2F7;
         }
         .bus-item:last-child { border-bottom: none; }
@@ -179,7 +189,7 @@
             width: 100%; 
             border-collapse: collapse; 
             font-size: 1rem; 
-            table-layout: fixed; /* 強制套用我們設定的比例 */
+            table-layout: fixed; 
         }
         .forecast-table th {
             text-align: center;
@@ -200,7 +210,6 @@
         
         .forecast-table td.day-col { text-align: left; font-weight: 600; color: #1C1C1E; padding-left: 24px;}
         
-        /* 解決天氣文字擠壓的關鍵：給予 50% 寬度並允許換行 */
         .forecast-table td.desc-col { 
             text-align: left; 
             font-size: 1rem;
@@ -208,7 +217,7 @@
             white-space: normal; 
         }
         .forecast-table .wx-icon { 
-            font-size: 2rem; /* 預報天氣圖案巨型化 */
+            font-size: 2rem; 
             margin-right: 8px; 
             vertical-align: middle;
         }
@@ -263,7 +272,6 @@
 <body>
 
 <div class="dashboard">
-    <!-- 頂部區塊 -->
     <div class="header">
         <div class="header-left" id="current-time">--:--</div>
         <div class="header-center">
@@ -280,9 +288,7 @@
         </div>
     </div>
 
-    <!-- 中間主要內容 -->
     <div class="main-content">
-        <!-- 左欄：巴士 -->
         <div class="section section-left">
             <div class="section-header">
                 <span>九巴預計到站時間</span>
@@ -293,7 +299,6 @@
             </div>
         </div>
 
-        <!-- 右欄：天氣預報 -->
         <div class="section">
             <div class="section-header">
                 <span>香港天文台天氣預報</span>
@@ -303,7 +308,6 @@
                 <table class="forecast-table">
                     <thead>
                         <tr>
-                            <!-- 嚴格限制欄寬比例，給「天氣描述」最多空間 -->
                             <th style="width: 12%; text-align: left; padding-left: 24px;">日</th>
                             <th style="width: 48%; text-align: left;">天氣</th>
                             <th style="width: 9%;">高</th>
@@ -320,7 +324,6 @@
         </div>
     </div>
 
-    <!-- 底部世界時鐘 -->
     <div class="clocks-section">
         <div class="clock-item">
             <div class="clock-city">東京 Tokyo</div>
@@ -336,7 +339,6 @@
         </div>
     </div>
 
-    <!-- 頁尾狀態列 -->
     <div class="footer">
         <div class="footer-left">
             <span id="update-status">更新中...</span>
@@ -347,7 +349,6 @@
     </div>
 </div>
 
-<!-- 巴士設定 Modal -->
 <div class="modal-overlay" id="busModal">
     <div class="modal-content">
         <h3 style="margin-bottom: 15px; font-size: 1.25rem; font-weight: 700;">設定關注巴士站</h3>
@@ -473,17 +474,15 @@ var app = (function() {
         fetchJSON("https://data.weather.gov.hk/weatherAPI/opendata/weather.php?dataType=fnd&lang=tc", function(err, data) {
             if (!err && data) {
                 if (data.generalSituation) {
+                    // 解除 15 字限制，讓 CSS 控制兩行顯示
                     var desc = data.generalSituation.split("。")[0];
-                    if(desc.length > 15) desc = desc.substring(0, 15) + "...";
                     document.getElementById("current-weather-desc").innerHTML = colorizeWeatherText(desc);
                 }
                 if (data.weatherForecast && data.weatherForecast.length > 0) {
                     var html = "";
-                    // 取未來 5 天以適配畫面高度
                     var limit = Math.min(data.weatherForecast.length, 5); 
                     for (var i = 0; i < limit; i++) {
                         var day = data.weatherForecast[i];
-                        // 將「星期一」替換成「周一」，節省空間
                         var shortWeek = day.week.replace("星期", "周");
                         
                         html += "<tr>";
@@ -539,7 +538,11 @@ var app = (function() {
 
             var parsedData = [];
             for (var k in routesMap) {
-                if (routesMap.hasOwnProperty(k)) parsedData.push(routesMap[k]);
+                if (routesMap.hasOwnProperty(k)) {
+                    // 修復：確保 ETA 時間由小到大排序 (解決 8分 20分 8分 的錯亂問題)
+                    routesMap[k].etas.sort(function(a, b) { return a - b; });
+                    parsedData.push(routesMap[k]);
+                }
             }
             
             parsedData.sort(function(a, b) {
@@ -556,8 +559,8 @@ var app = (function() {
 
     function renderBusList(busData) {
         var html = "";
-        // 顯示 6 班車
-        for (var i = 0; i < Math.min(busData.length, 6); i++) { 
+        // 放大到顯示 8 班車，並配合 overflow-y 滑動
+        for (var i = 0; i < Math.min(busData.length, 8); i++) { 
             var bus = busData[i];
             html += '<div class="bus-item">';
             html += '  <div class="bus-route-info">';
