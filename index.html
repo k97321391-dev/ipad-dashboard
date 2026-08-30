@@ -7,7 +7,6 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <title>資訊儀表板</title>
     <style>
-        /* iOS 風格與舊版 iPad 橫置相容性修正 */
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body {
             font-family: -apple-system, BlinkMacSystemFont, "SF Pro TC", "SF Pro Text", "Helvetica Neue", Helvetica, Arial, sans-serif;
@@ -15,9 +14,10 @@
             color: #1C1C1E;
             padding: 10px; /* 縮小外部間距 */
             display: flex;
-            justify-content: center;
+            flex-direction: column;
+            align-items: center;
             -webkit-font-smoothing: antialiased;
-            min-height: 100vh;
+            height: 100vh; /* 強制與螢幕等高 */
         }
         
         .dashboard {
@@ -28,7 +28,7 @@
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
             display: flex;
             flex-direction: column;
-            /* 移除 overflow: hidden 讓舊設備可以捲動內容 */
+            flex: 1; /* 讓白底儀表板往下撐滿螢幕剩餘空間 */
         }
 
         .header {
@@ -59,6 +59,7 @@
             font-size: 1rem;
             color: #8E8E93;
         }
+        
         .header-right { text-align: right; }
         .header-right .temp-container {
             display: flex;
@@ -85,7 +86,7 @@
         .main-content {
             display: flex;
             border-bottom: 1px solid #E5E5EA;
-            /* 在小螢幕上可以考慮改成 column，但截圖是並排，我們維持並排 */
+            flex: 1; /* 讓中間的內容區塊自動延伸 */
         }
         
         .section {
@@ -121,7 +122,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 12px 0;
+            padding: 12px 0; /* 調整為適應 2cm 空間 */
             border-bottom: 1px solid #E5E5EA;
         }
         .bus-item:last-child { border-bottom: none; }
@@ -165,7 +166,7 @@
         }
         .forecast-table th.left-align { text-align: left; }
         .forecast-table td {
-            padding: 10px 0;
+            padding: 12px 0; /* 調整為適應 2cm 空間 */
             border-bottom: 1px solid #E5E5EA;
             text-align: center;
             vertical-align: middle;
@@ -201,7 +202,6 @@
             background-color: #FFFFFF;
         }
 
-        /* Modal (設定巴士站) 樣式 */
         .modal-overlay {
             display: none;
             position: fixed;
@@ -453,9 +453,10 @@ var app = (function() {
                     if(desc.length > 15) desc = desc.substring(0, 15) + "...";
                     document.getElementById("current-weather-desc").innerHTML = colorizeWeatherText(desc);
                 }
-                if (data.weatherForecast && data.weatherForecast.length >= 4) {
+                if (data.weatherForecast && data.weatherForecast.length > 0) {
                     var html = "";
-                    for (var i = 0; i < 4; i++) {
+                    var limit = Math.min(data.weatherForecast.length, 5); /* 天氣預報改為 5 天以適應 2cm 空間 */
+                    for (var i = 0; i < limit; i++) {
                         var day = data.weatherForecast[i];
                         html += "<tr>";
                         html += "<td class='day-col'>" + day.week + "</td>";
@@ -473,7 +474,6 @@ var app = (function() {
         });
     }
 
-    // 真實 API 獲取巴士數據
     function updateBusData() {
         if (!userStopId) {
             document.getElementById("bus-list").innerHTML = '<div style="padding:20px;text-align:center;color:#8E8E93;">請點擊右下角設定巴士站</div>';
@@ -530,7 +530,7 @@ var app = (function() {
 
     function renderBusList(busData) {
         var html = "";
-        for (var i = 0; i < Math.min(busData.length, 5); i++) { // 最多顯示5條線避免超出版面
+        for (var i = 0; i < Math.min(busData.length, 6); i++) { // 巴士列表改為 6 條以適應 2cm 空間
             var bus = busData[i];
             html += '<div class="bus-item">';
             html += '  <div class="bus-route-info">';
@@ -558,7 +558,6 @@ var app = (function() {
         document.getElementById("update-status").innerText = "天氣: " + lastWeatherUpdate + " | 巴士: " + lastBusUpdate + " | 頁面: " + pageUpdate;
     }
 
-    // --- 巴士設定邏輯 ---
     function openBusSettings() {
         document.getElementById("busModal").style.display = "flex";
         document.getElementById("routeInput").value = "";
