@@ -71,8 +71,8 @@
             justify-content: flex-end;
         }
         .header-right .current-emoji {
-            font-size: 2.6rem;
-            margin-right: 8px;
+            font-size: 3.2rem; /* 大幅放大頂部當下天氣圖案 */
+            margin-right: 12px;
         }
         .header-right .temp {
             font-size: 3.6rem;
@@ -199,7 +199,11 @@
             font-size: 0.9rem; /* 稍微縮小，讓多行排版更舒適 */
             line-height: 1.35; /* 放寬行高，允許天氣描述自然換行 */
         }
-        .forecast-table .wx-icon { font-size: 1.2rem; margin-right: 4px; vertical-align: middle; }
+        .forecast-table .wx-icon { 
+            font-size: 1.8rem; /* 顯著放大天氣預報圖案 */
+            margin-right: 8px; 
+            vertical-align: middle; 
+        }
         .forecast-table td.temp-col { font-weight: 700; font-size: 1.05rem; }
 
         .clocks-section {
