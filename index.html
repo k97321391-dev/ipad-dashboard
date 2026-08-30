@@ -185,17 +185,21 @@
             vertical-align: middle;
         }
         .forecast-table tr:last-child td { border-bottom: none; }
-        .forecast-table td.day-col { text-align: left; font-weight: 600; width: 14%; color: #1C1C1E; }
+        .forecast-table td.day-col { 
+            text-align: left; 
+            font-weight: 600; 
+            width: 14%; 
+            color: #1C1C1E; 
+            white-space: nowrap; /* 確保日期不會折行 */
+        }
         .forecast-table td.desc-col { 
             text-align: left; 
             padding-right: 5px; 
             width: 42%; 
-            font-size: 0.95rem;
-            white-space: nowrap; /* 防折行 */
-            overflow: hidden;
-            text-overflow: ellipsis; /* 文字過長顯示省略號 */
+            font-size: 0.9rem; /* 稍微縮小，讓多行排版更舒適 */
+            line-height: 1.35; /* 放寬行高，允許天氣描述自然換行 */
         }
-        .forecast-table .wx-icon { font-size: 1.2rem; margin-right: 6px; vertical-align: middle; }
+        .forecast-table .wx-icon { font-size: 1.2rem; margin-right: 4px; vertical-align: middle; }
         .forecast-table td.temp-col { font-weight: 700; font-size: 1.05rem; }
 
         .clocks-section {
@@ -482,8 +486,10 @@ var app = (function() {
                     var limit = Math.min(data.weatherForecast.length, 5); 
                     for (var i = 0; i < limit; i++) {
                         var day = data.weatherForecast[i];
+                        var weekStr = day.week.replace("星期", "周"); /* 將 星期一 改為 周一 節省空間 */
+                        
                         html += "<tr>";
-                        html += "<td class='day-col'>" + day.week + "</td>";
+                        html += "<td class='day-col'>" + weekStr + "</td>";
                         html += "<td class='desc-col' title='" + day.forecastWeather + "'><span class='wx-icon'>" + getIOSEmojiIcon(day.ForecastIcon) + "</span> <span class='desc-text'>" + colorizeWeatherText(day.forecastWeather) + "</span></td>";
                         html += "<td class='temp-col' style='color: #FF3B30;'>" + day.forecastMaxtemp.value + "°</td>";
                         html += "<td class='temp-col' style='color: #007AFF;'>" + day.forecastMintemp.value + "°</td>";
