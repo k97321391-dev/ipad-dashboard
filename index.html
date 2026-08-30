@@ -7,23 +7,19 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <title>資訊儀表板</title>
     <style>
-        /* iOS 風格基礎設定 */
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
+        /* iOS 風格與舊版 iPad 橫置相容性修正 */
+        * { box-sizing: border-box; margin: 0; padding: 0; }
         body {
             font-family: -apple-system, BlinkMacSystemFont, "SF Pro TC", "SF Pro Text", "Helvetica Neue", Helvetica, Arial, sans-serif;
-            background-color: #F2F2F7; /* iOS 系統背景灰 */
+            background-color: #F2F2F7;
             color: #1C1C1E;
-            padding: 20px;
+            padding: 10px; /* 縮小外部間距 */
             display: flex;
             justify-content: center;
             -webkit-font-smoothing: antialiased;
+            min-height: 100vh;
         }
         
-        /* 主容器 (懸浮卡片) */
         .dashboard {
             width: 100%;
             max-width: 1024px;
@@ -32,215 +28,154 @@
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
             display: flex;
             flex-direction: column;
-            overflow: hidden;
+            /* 移除 overflow: hidden 讓舊設備可以捲動內容 */
         }
 
-        /* 頂部區域 */
         .header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 25px 30px;
+            padding: 15px 20px; /* 縮小內距 */
             background: linear-gradient(180deg, #E3F2FD 0%, #FFFFFF 100%);
             border-bottom: 1px solid #E5E5EA;
         }
         .header-left {
-            font-size: 5rem;
-            font-weight: 200; /* iOS 極細字體 */
+            font-size: 4rem; /* 稍微縮小字體以適應 A1455 橫屏 */
+            font-weight: 200;
             line-height: 1;
-            letter-spacing: -2px;
+            letter-spacing: -1px;
         }
         .header-center {
             text-align: left;
-            padding-left: 20px;
+            padding-left: 15px;
             flex: 1;
         }
         .header-center .day-of-week {
-            font-size: 1.8rem;
+            font-size: 1.5rem;
             font-weight: 600;
-            margin-bottom: 4px;
+            margin-bottom: 2px;
         }
         .header-center .date-loc {
-            font-size: 1.1rem;
+            font-size: 1rem;
             color: #8E8E93;
-            font-weight: 400;
         }
-        .header-right {
-            text-align: right;
-        }
+        .header-right { text-align: right; }
         .header-right .temp-container {
             display: flex;
             align-items: center;
             justify-content: flex-end;
         }
         .header-right .current-emoji {
-            font-size: 3rem;
-            margin-right: 15px;
+            font-size: 2.5rem;
+            margin-right: 10px;
         }
         .header-right .temp {
-            font-size: 4rem;
+            font-size: 3.5rem; /* 稍微縮小 */
             font-weight: 300;
             line-height: 1;
-            letter-spacing: -1px;
             transition: color 0.5s ease;
         }
         .header-right .weather-desc {
-            font-size: 1.2rem;
+            font-size: 1.1rem;
             font-weight: 500;
-            margin-top: 8px;
+            margin-top: 5px;
         }
-        .header-right .humidity {
-            font-size: 1rem;
-            color: #8E8E93;
-            margin-top: 4px;
-        }
+        .header-right .humidity { font-size: 0.9rem; color: #8E8E93; }
 
-        /* 中間主要內容區 */
         .main-content {
             display: flex;
             border-bottom: 1px solid #E5E5EA;
+            /* 在小螢幕上可以考慮改成 column，但截圖是並排，我們維持並排 */
         }
         
         .section {
             flex: 1;
             display: flex;
             flex-direction: column;
+            width: 50%; /* 強制平分，相容舊 Safari flexbox */
         }
-        .section-left {
-            border-right: 1px solid #E5E5EA;
-        }
+        .section-left { border-right: 1px solid #E5E5EA; }
         
         .section-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 15px 25px;
+            padding: 10px 20px;
             background-color: #F9F9FB;
             border-bottom: 1px solid #E5E5EA;
             font-weight: 600;
-            font-size: 1.1rem;
-            color: #1C1C1E;
+            font-size: 1rem;
         }
         
-        .refresh-btn {
+        .refresh-btn, .text-btn {
             border: none;
             background: transparent;
-            color: #007AFF; /* iOS 藍 */
-            font-size: 0.95rem;
+            color: #007AFF;
+            font-size: 0.9rem;
             cursor: pointer;
             font-weight: 500;
         }
 
-        /* 巴士列表樣式 */
-        .bus-list {
-            padding: 5px 25px;
-        }
+        .bus-list { padding: 0 15px; }
         .bus-item {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 15px 0;
+            padding: 12px 0;
             border-bottom: 1px solid #E5E5EA;
         }
-        .bus-item:last-child {
-            border-bottom: none;
-        }
-        .bus-route-info {
-            display: flex;
-            align-items: center;
-        }
+        .bus-item:last-child { border-bottom: none; }
+        .bus-route-info { display: flex; align-items: center; }
         .bus-route-info .route-num {
-            background-color: #E3002B; /* 九巴紅 */
+            background-color: #E3002B;
             color: #FFFFFF;
-            font-size: 1.3rem;
+            font-size: 1.2rem;
             font-weight: bold;
-            padding: 4px 12px;
-            border-radius: 8px;
-            margin-right: 15px;
-            min-width: 50px;
+            padding: 3px 10px;
+            border-radius: 6px;
+            margin-right: 10px;
+            min-width: 45px;
             text-align: center;
         }
-        .bus-route-info .dest-info {
-            display: flex;
-            flex-direction: column;
-        }
-        .bus-route-info .destination {
-            font-size: 1.1rem;
-            font-weight: 600;
-        }
-        .bus-route-info .stop-name {
-            font-size: 0.85rem;
-            color: #8E8E93;
-            margin-top: 2px;
-        }
+        .bus-route-info .dest-info { display: flex; flex-direction: column; }
+        .bus-route-info .destination { font-size: 1rem; font-weight: 600; }
+        .bus-route-info .stop-name { font-size: 0.8rem; color: #8E8E93; }
         .bus-eta {
-            font-size: 1.6rem;
+            font-size: 1.4rem;
             font-weight: bold;
-            color: #34C759; /* iOS 綠 / 即時 ETA 綠 */
+            color: #34C759;
             text-align: right;
         }
         .bus-eta span.min-text {
-            font-size: 1rem;
+            font-size: 0.9rem;
             font-weight: normal;
             color: #8E8E93;
-            margin: 0 8px 0 2px;
+            margin: 0 5px 0 2px;
         }
 
-        /* 天氣預報表格樣式 */
-        .forecast-table-container {
-            padding: 10px 25px;
-        }
-        .forecast-table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 1rem;
-        }
+        .forecast-table-container { padding: 5px 15px; }
+        .forecast-table { width: 100%; border-collapse: collapse; font-size: 0.95rem; }
         .forecast-table th {
             text-align: center;
-            padding-bottom: 12px;
+            padding-bottom: 8px;
             border-bottom: 1px solid #E5E5EA;
             font-weight: 500;
             color: #8E8E93;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
         }
-        .forecast-table th.left-align {
-            text-align: left;
-        }
+        .forecast-table th.left-align { text-align: left; }
         .forecast-table td {
-            padding: 14px 0;
+            padding: 10px 0;
             border-bottom: 1px solid #E5E5EA;
             text-align: center;
             vertical-align: middle;
         }
-        .forecast-table tr:last-child td {
-            border-bottom: none;
-        }
-        .forecast-table td.day-col {
-            text-align: left;
-            font-weight: 600;
-            width: 12%;
-        }
-        .forecast-table td.desc-col {
-            text-align: left;
-            padding-right: 10px;
-            width: 45%;
-            font-size: 0.95rem;
-            line-height: 1.4;
-        }
-        .forecast-table .wx-icon {
-            font-size: 1.3rem;
-            margin-right: 5px;
-            vertical-align: middle;
-        }
-        .forecast-table .desc-text {
-            vertical-align: middle;
-        }
-        .forecast-table td.temp-col {
-            font-weight: 600;
-            font-size: 1.1rem;
-        }
+        .forecast-table tr:last-child td { border-bottom: none; }
+        .forecast-table td.day-col { text-align: left; font-weight: 600; width: 15%; }
+        .forecast-table td.desc-col { text-align: left; padding-right: 5px; width: 40%; font-size: 0.9rem; }
+        .forecast-table .wx-icon { font-size: 1.1rem; margin-right: 5px; }
+        .forecast-table td.temp-col { font-weight: 600; font-size: 1rem; }
 
-        /* 底部世界時鐘 */
         .clocks-section {
             display: flex;
             background-color: #F9F9FB;
@@ -249,38 +184,57 @@
         .clock-item {
             flex: 1;
             text-align: center;
-            padding: 20px 10px;
+            padding: 15px 5px;
             border-right: 1px solid #E5E5EA;
         }
-        .clock-item:last-child {
-            border-right: none;
-        }
-        .clock-city {
-            font-size: 0.95rem;
-            font-weight: 500;
-            color: #8E8E93;
-            margin-bottom: 6px;
-        }
-        .clock-time {
-            font-size: 1.8rem;
-            font-weight: 300;
-        }
-        .clock-time span.day {
-            font-size: 1rem;
-            font-weight: 400;
-            color: #8E8E93;
-            margin-right: 8px;
-        }
+        .clock-item:last-child { border-right: none; }
+        .clock-city { font-size: 0.9rem; font-weight: 500; color: #8E8E93; margin-bottom: 4px; }
+        .clock-time { font-size: 1.5rem; font-weight: 300; }
+        .clock-time span.day { font-size: 0.9rem; color: #8E8E93; margin-right: 5px; }
 
-        /* 最底部資訊列 */
         .footer {
             display: flex;
             justify-content: space-between;
-            padding: 12px 25px;
+            padding: 10px 20px;
             font-size: 0.8rem;
             color: #8E8E93;
             background-color: #FFFFFF;
         }
+
+        /* Modal (設定巴士站) 樣式 */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.5);
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+        }
+        .modal-content {
+            background: #fff;
+            padding: 20px;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 400px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+        .modal-content h3 { margin-bottom: 15px; font-size: 1.2rem; }
+        .modal-content input, .modal-content select {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            font-size: 1rem;
+        }
+        .modal-btns { display: flex; justify-content: flex-end; gap: 10px; }
+        .btn {
+            padding: 8px 15px; border: none; border-radius: 8px;
+            cursor: pointer; font-size: 1rem; font-weight: bold;
+        }
+        .btn-cancel { background: #E5E5EA; color: #1C1C1E; }
+        .btn-save { background: #007AFF; color: #fff; }
     </style>
 </head>
 <body>
@@ -291,7 +245,7 @@
         <div class="header-left" id="current-time">--:--</div>
         <div class="header-center">
             <div class="day-of-week" id="current-day">星期-</div>
-            <div class="date-loc" id="current-date-loc">----年--月--日 · 旺角奶路臣街</div>
+            <div class="date-loc" id="current-date-loc">----年--月--日 · <span id="display-stop-name">載入中...</span></div>
         </div>
         <div class="header-right">
             <div class="temp-container">
@@ -312,7 +266,7 @@
                 <button class="refresh-btn" onclick="app.updateBusData()">重新整理</button>
             </div>
             <div class="bus-list" id="bus-list">
-                <div style="padding: 30px; text-align: center; color: #8E8E93;">載入中...</div>
+                <div style="padding: 20px; text-align: center; color: #8E8E93;">請設定巴士站...</div>
             </div>
         </div>
 
@@ -331,11 +285,11 @@
                             <th>高</th>
                             <th>低</th>
                             <th>濕度</th>
-                            <th>降雨</th>
+                            <th>降</th>
                         </tr>
                     </thead>
                     <tbody id="forecast-list">
-                        <tr><td colspan="6" style="text-align: center; padding: 30px; color: #8E8E93;">載入中...</td></tr>
+                        <tr><td colspan="6" style="text-align: center; padding: 20px; color: #8E8E93;">載入中...</td></tr>
                     </tbody>
                 </table>
             </div>
@@ -364,8 +318,33 @@
             <span id="update-status">更新中...</span>
         </div>
         <div class="footer-right">
-            資料來源：香港天文台 / 九巴
+            <button class="text-btn" onclick="app.openBusSettings()">⚙ 設定巴士站</button>
         </div>
+    </div>
+</div>
+
+<!-- 巴士設定 Modal -->
+<div class="modal-overlay" id="busModal">
+    <div class="modal-content">
+        <h3>設定關注巴士站</h3>
+        <p style="font-size:0.85rem; color:#8E8E93; margin-bottom:10px;">請先輸入路線號碼，系統會搜尋該路線途經的車站。</p>
+        
+        <label>1. 路線號碼 (如 1A, 281A)</label>
+        <input type="text" id="routeInput" placeholder="輸入路線號碼..." style="text-transform: uppercase;">
+        <button class="btn btn-save" style="width:100%; margin-bottom:15px;" onclick="app.searchRouteStops()">搜尋車站</button>
+        
+        <div id="stopSelectionArea" style="display:none;">
+            <label>2. 選擇方向與車站</label>
+            <select id="stopSelect"></select>
+            
+            <div class="modal-btns">
+                <button class="btn btn-cancel" onclick="app.closeBusSettings()">取消</button>
+                <button class="btn btn-save" onclick="app.saveBusSetting()">儲存並載入</button>
+            </div>
+        </div>
+        <div id="modalMsg" style="color:red; font-size:0.85rem; margin-top:10px;"></div>
+        
+        <button class="btn btn-cancel" id="cancelSearchBtn" style="width:100%; margin-top:10px;" onclick="app.closeBusSettings()">關閉</button>
     </div>
 </div>
 
@@ -373,21 +352,18 @@
 var app = (function() {
     var lastWeatherUpdate = "--:--";
     var lastBusUpdate = "--:--";
-    
+    var userStopId = localStorage.getItem("kmb_stop_id") || "";
+    var userStopName = localStorage.getItem("kmb_stop_name") || "尚未設定車站";
+    var currentRouteData = []; // 暫存搜尋到的路線車站
+
     function fetchJSON(url, callback) {
         var xhr = new XMLHttpRequest();
         xhr.onreadystatechange = function() {
             if (xhr.readyState === 4) {
                 if (xhr.status >= 200 && xhr.status < 300) {
-                    try {
-                        var data = JSON.parse(xhr.responseText);
-                        callback(null, data);
-                    } catch (e) {
-                        callback(e, null);
-                    }
-                } else {
-                    callback(new Error("Request Failed"), null);
-                }
+                    try { callback(null, JSON.parse(xhr.responseText)); } 
+                    catch (e) { callback(e, null); }
+                } else { callback(new Error("Request Failed"), null); }
             }
         };
         xhr.timeout = 10000;
@@ -396,26 +372,22 @@ var app = (function() {
         xhr.send();
     }
 
-    function padZero(num) {
-        return num < 10 ? "0" + num : num;
-    }
+    function padZero(num) { return num < 10 ? "0" + num : num; }
 
-    // 天文台圖示代碼轉 Apple Emoji
     function getIOSEmojiIcon(code) {
         var c = parseInt(code, 10);
-        if (c >= 50 && c <= 51) return "☀️"; // 天晴
-        if (c >= 52 && c <= 54) return "⛅️"; // 部份時間有陽光
-        if (c >= 60 && c <= 61) return "☁️"; // 多雲
-        if (c >= 62 && c <= 64) return "🌦"; // 微雨/驟雨
-        if (c == 65) return "⛈"; // 雷暴
-        if (c >= 70 && c <= 75) return "🌧"; // 中雨/大雨
-        if (c >= 76 && c <= 77) return "霧"; // 霧
-        if (c >= 80 && c <= 85) return "💨"; // 大風
-        if (c >= 90 && c <= 93) return "🌡"; // 炎熱/寒冷
-        return "🌥"; // 預設
+        if (c >= 50 && c <= 51) return "☀️";
+        if (c >= 52 && c <= 54) return "⛅️";
+        if (c >= 60 && c <= 61) return "☁️";
+        if (c >= 62 && c <= 64) return "🌦";
+        if (c == 65) return "⛈";
+        if (c >= 70 && c <= 75) return "🌧";
+        if (c >= 76 && c <= 77) return "霧";
+        if (c >= 80 && c <= 85) return "💨";
+        if (c >= 90 && c <= 93) return "🌡";
+        return "🌥";
     }
 
-    // 天氣文字關鍵字動態上色
     function colorizeWeatherText(text) {
         if (!text) return "--";
         return text
@@ -427,38 +399,31 @@ var app = (function() {
             .replace(/雲/g, '<span style="color: #8E8E93; font-weight: 600;">雲</span>');
     }
 
-    // 頂部時間日期
     function updateLocalTime() {
         var now = new Date();
         document.getElementById("current-time").innerText = padZero(now.getHours()) + ":" + padZero(now.getMinutes());
         var days = ["日", "一", "二", "三", "四", "五", "六"];
         document.getElementById("current-day").innerText = "星期" + days[now.getDay()];
-        var dateStr = now.getFullYear() + "年" + padZero(now.getMonth() + 1) + "月" + padZero(now.getDate()) + "日 · 旺角奶路臣街";
-        document.getElementById("current-date-loc").innerText = dateStr;
+        
+        var dateStr = now.getFullYear() + "年" + padZero(now.getMonth() + 1) + "月" + padZero(now.getDate()) + "日";
+        document.getElementById("current-date-loc").innerHTML = dateStr + " · " + userStopName;
         updateFooterStatus();
     }
 
-    // 世界時鐘 (相容舊設備的硬計算)
     function updateWorldClocks() {
         var now = new Date();
         var utc = now.getTime() + (now.getTimezoneOffset() * 60000);
-        
         function calcTime(offsetHours) {
             var nd = new Date(utc + (3600000 * offsetHours));
             var days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
             return { day: days[nd.getDay()], time: padZero(nd.getHours()) + ":" + padZero(nd.getMinutes()) };
         }
-
-        var tyo = calcTime(9);   // 東京 UTC+9
-        var lon = calcTime(1);   // 倫敦 (假設夏令時 UTC+1)
-        var ny = calcTime(-4);   // 紐約 (假設夏令時 UTC-4)
-
+        var tyo = calcTime(9), lon = calcTime(1), ny = calcTime(-4);
         document.getElementById("clock-tyo").innerHTML = '<span class="day">' + tyo.day + '</span> ' + tyo.time;
         document.getElementById("clock-lon").innerHTML = '<span class="day">' + lon.day + '</span> ' + lon.time;
         document.getElementById("clock-ny").innerHTML = '<span class="day">' + ny.day + '</span> ' + ny.time;
     }
 
-    // 獲取天氣
     function updateWeatherData() {
         fetchJSON("https://data.weather.gov.hk/weatherAPI/opendata/weather.php?dataType=rhrread&lang=tc", function(err, data) {
             if (!err && data) {
@@ -466,7 +431,6 @@ var app = (function() {
                     var tempVal = data.temperature.data[0].value;
                     var tempEl = document.getElementById("current-temp");
                     tempEl.innerText = tempVal + "°C";
-                    // 溫度顏色判斷
                     if (tempVal >= 30) tempEl.style.color = "#FF3B30";
                     else if (tempVal <= 20) tempEl.style.color = "#007AFF";
                     else tempEl.style.color = "#1C1C1E";
@@ -477,8 +441,7 @@ var app = (function() {
                 if (data.icon && data.icon.length > 0) {
                     document.getElementById("current-wx-emoji").innerText = getIOSEmojiIcon(data.icon[0]);
                 }
-                var now = new Date();
-                lastWeatherUpdate = padZero(now.getHours()) + ":" + padZero(now.getMinutes());
+                lastWeatherUpdate = padZero(new Date().getHours()) + ":" + padZero(new Date().getMinutes());
                 updateFooterStatus();
             }
         });
@@ -487,7 +450,7 @@ var app = (function() {
             if (!err && data) {
                 if (data.generalSituation) {
                     var desc = data.generalSituation.split("。")[0];
-                    if(desc.length > 12) desc = "大致多雲，局部地區有驟雨"; // 簡化長句
+                    if(desc.length > 15) desc = desc.substring(0, 15) + "...";
                     document.getElementById("current-weather-desc").innerHTML = colorizeWeatherText(desc);
                 }
                 if (data.weatherForecast && data.weatherForecast.length >= 4) {
@@ -510,45 +473,180 @@ var app = (function() {
         });
     }
 
-    // 獲取巴士 (內建安全降級機制的模擬數據)
+    // 真實 API 獲取巴士數據
     function updateBusData() {
-        // 為了確保路由器/舊iPad 永遠不破圖，此處使用精緻的模擬資料 fallback
-        var mockData = [
-            { route: "1", dest: "尖沙咀碼頭", stopName: "旺角奶路臣街", etas: [17, 35, 55] },
-            { route: "1A", dest: "尖沙咀碼頭", stopName: "旺角奶路臣街", etas: [1, 18, 36] },
-            { route: "2", dest: "尖沙咀碼頭", stopName: "旺角奶路臣街", etas: [10, 34] },
-            { route: "6", dest: "尖沙咀碼頭", stopName: "旺角奶路臣街", etas: [14, 44] }
-        ];
+        if (!userStopId) {
+            document.getElementById("bus-list").innerHTML = '<div style="padding:20px;text-align:center;color:#8E8E93;">請點擊右下角設定巴士站</div>';
+            return;
+        }
 
+        var url = "https://data.etabus.gov.hk/v1/transport/kmb/stop-eta/" + userStopId;
+        fetchJSON(url, function(err, response) {
+            if (err || !response || !response.data) {
+                document.getElementById("bus-list").innerHTML = '<div style="padding:20px;text-align:center;color:#E3002B;">無法取得資料，請稍後再試</div>';
+                return;
+            }
+
+            var routesMap = {};
+            var nowTime = new Date().getTime();
+
+            for (var i = 0; i < response.data.length; i++) {
+                var item = response.data[i];
+                if (!item.eta) continue;
+
+                // 兼容 iOS 9 日期解析
+                var etaStr = item.eta.replace(/-/g, '/').replace('T', ' ').split('+')[0];
+                var etaTime = new Date(etaStr).getTime();
+                var diffMin = Math.floor((etaTime - nowTime) / 60000);
+                
+                if (diffMin < 0) continue; // 已過站
+
+                var key = item.route + "-" + item.dir + "-" + item.dest_tc;
+                if (!routesMap[key]) {
+                    routesMap[key] = { route: item.route, dest: item.dest_tc, etas: [] };
+                }
+                if (routesMap[key].etas.length < 3) {
+                    routesMap[key].etas.push(diffMin);
+                }
+            }
+
+            var parsedData = [];
+            for (var k in routesMap) {
+                if (routesMap.hasOwnProperty(k)) parsedData.push(routesMap[k]);
+            }
+            
+            // 排序路線號碼 (數字前綴)
+            parsedData.sort(function(a, b) {
+                return parseInt(a.route) - parseInt(b.route);
+            });
+
+            if(parsedData.length === 0) {
+                document.getElementById("bus-list").innerHTML = '<div style="padding:20px;text-align:center;color:#8E8E93;">此站暫無預計到站資料</div>';
+            } else {
+                renderBusList(parsedData);
+            }
+        });
+    }
+
+    function renderBusList(busData) {
         var html = "";
-        for (var i = 0; i < mockData.length; i++) {
-            var bus = mockData[i];
+        for (var i = 0; i < Math.min(busData.length, 5); i++) { // 最多顯示5條線避免超出版面
+            var bus = busData[i];
             html += '<div class="bus-item">';
             html += '  <div class="bus-route-info">';
             html += '    <div class="route-num">' + bus.route + '</div>';
             html += '    <div class="dest-info">';
             html += '      <span class="destination">往 ' + bus.dest + '</span>';
-            html += '      <span class="stop-name">' + bus.stopName + '</span>';
             html += '    </div>';
             html += '  </div>';
             html += '  <div class="bus-eta">';
             for (var j = 0; j < bus.etas.length; j++) {
-                html += bus.etas[j] + '<span class="min-text">分</span> ';
+                var minTxt = bus.etas[j] === 0 ? "即將" : bus.etas[j] + '<span class="min-text">分</span> ';
+                html += minTxt;
             }
             html += '  </div>';
             html += '</div>';
         }
         document.getElementById("bus-list").innerHTML = html;
-        
-        var now = new Date();
-        lastBusUpdate = padZero(now.getHours()) + ":" + padZero(now.getMinutes());
+        lastBusUpdate = padZero(new Date().getHours()) + ":" + padZero(new Date().getMinutes());
         updateFooterStatus();
     }
 
     function updateFooterStatus() {
         var now = new Date();
         var pageUpdate = padZero(now.getHours()) + ":" + padZero(now.getMinutes()) + ":" + padZero(now.getSeconds());
-        document.getElementById("update-status").innerText = "天氣更新: " + lastWeatherUpdate + " | 巴士更新: " + lastBusUpdate + " | 頁面: " + pageUpdate;
+        document.getElementById("update-status").innerText = "天氣: " + lastWeatherUpdate + " | 巴士: " + lastBusUpdate + " | 頁面: " + pageUpdate;
+    }
+
+    // --- 巴士設定邏輯 ---
+    function openBusSettings() {
+        document.getElementById("busModal").style.display = "flex";
+        document.getElementById("routeInput").value = "";
+        document.getElementById("stopSelectionArea").style.display = "none";
+        document.getElementById("cancelSearchBtn").style.display = "block";
+        document.getElementById("modalMsg").innerText = "";
+    }
+
+    function closeBusSettings() {
+        document.getElementById("busModal").style.display = "none";
+    }
+
+    function searchRouteStops() {
+        var route = document.getElementById("routeInput").value.trim().toUpperCase();
+        var msgEl = document.getElementById("modalMsg");
+        if (!route) { msgEl.innerText = "請輸入路線號碼"; return; }
+        
+        msgEl.style.color = "#8E8E93";
+        msgEl.innerText = "搜尋中，請稍候...";
+        
+        // 1. 取得路線去回程
+        fetchJSON("https://data.etabus.gov.hk/v1/transport/kmb/route-stop/" + route + "/inbound/1", function(errIn, dataIn) {
+            fetchJSON("https://data.etabus.gov.hk/v1/transport/kmb/route-stop/" + route + "/outbound/1", function(errOut, dataOut) {
+                var allStops = [];
+                if (!errIn && dataIn.data) allStops = allStops.concat(dataIn.data);
+                if (!errOut && dataOut.data) allStops = allStops.concat(dataOut.data);
+                
+                if (allStops.length === 0) {
+                    msgEl.style.color = "red";
+                    msgEl.innerText = "找不到該路線的車站，請檢查號碼是否正確。";
+                    return;
+                }
+
+                // 2. 由於舊設備無法一次打幾十個 API 查詢站名，我們直接載入一個簡化的全港站名清單 (如果有的話)
+                // 但為了精簡，我們只顯示 ID (或逐一查詢前幾個，這會比較慢)。
+                // 為了流暢體驗，這裡採用批次非同步查詢站名
+                msgEl.innerText = "正在解析車站名稱...";
+                currentRouteData = allStops;
+                var selectEl = document.getElementById("stopSelect");
+                selectEl.innerHTML = "";
+                
+                // 限制最多處理 60 個站以防舊機當機
+                var limit = Math.min(allStops.length, 60);
+                var completed = 0;
+
+                for (var i = 0; i < limit; i++) {
+                    (function(stopObj, index) {
+                        fetchJSON("https://data.etabus.gov.hk/v1/transport/kmb/stop/" + stopObj.stop, function(err, stopData) {
+                            completed++;
+                            var stopName = stopObj.stop; // fallback
+                            if (!err && stopData && stopData.data) {
+                                stopName = stopData.data.name_tc;
+                            }
+                            
+                            var dirStr = stopObj.bound === "I" ? "[回程]" : "[去程]";
+                            var option = document.createElement("option");
+                            option.value = stopObj.stop;
+                            option.text = dirStr + " " + stopName;
+                            option.setAttribute("data-name", stopName);
+                            selectEl.add(option);
+
+                            if (completed === limit) {
+                                document.getElementById("stopSelectionArea").style.display = "block";
+                                document.getElementById("cancelSearchBtn").style.display = "none";
+                                msgEl.innerText = "";
+                            }
+                        });
+                    })(allStops[i], i);
+                }
+            });
+        });
+    }
+
+    function saveBusSetting() {
+        var selectEl = document.getElementById("stopSelect");
+        if (selectEl.selectedIndex === -1) return;
+        
+        var selectedOption = selectEl.options[selectEl.selectedIndex];
+        userStopId = selectedOption.value;
+        userStopName = selectedOption.getAttribute("data-name");
+        
+        localStorage.setItem("kmb_stop_id", userStopId);
+        localStorage.setItem("kmb_stop_name", userStopName);
+        
+        closeBusSettings();
+        document.getElementById("bus-list").innerHTML = '<div style="padding:20px;text-align:center;color:#8E8E93;">載入新車站資料中...</div>';
+        updateLocalTime(); // 更新標題上的站名
+        updateBusData(); // 立即重新抓資料
     }
 
     function init() {
@@ -566,18 +664,18 @@ var app = (function() {
     return {
         init: init,
         updateBusData: function() {
-            document.getElementById("bus-list").innerHTML = '<div style="padding: 30px; text-align: center; color:#8E8E93;">更新中...</div>';
+            document.getElementById("bus-list").innerHTML = '<div style="padding: 20px; text-align: center; color:#8E8E93;">更新中...</div>';
             updateBusData();
         },
-        updateWeatherData: function() {
-            updateWeatherData();
-        }
+        updateWeatherData: function() { updateWeatherData(); },
+        openBusSettings: openBusSettings,
+        closeBusSettings: closeBusSettings,
+        searchRouteStops: searchRouteStops,
+        saveBusSetting: saveBusSetting
     };
 })();
 
-window.onload = function() {
-    app.init();
-};
+window.onload = function() { app.init(); };
 </script>
 
 </body>
