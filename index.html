@@ -8,62 +8,68 @@
     <title>資訊儀表板</title>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        /* 針對舊版 iOS 確保 100% 填滿螢幕的終極解法 */
+        html, body {
+            height: 100%;
+            width: 100%;
+            overflow: hidden; /* 防止整個頁面出現原生捲軸 */
+        }
+        
         body {
             font-family: -apple-system, BlinkMacSystemFont, "SF Pro TC", "SF Pro Text", "Helvetica Neue", Helvetica, Arial, sans-serif;
             background-color: #F2F2F7;
             color: #1C1C1E;
-            padding: 10px;
+            padding: 12px; 
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
             display: flex;
-            flex-direction: column;
-            align-items: center;
+            justify-content: center;
             -webkit-font-smoothing: antialiased;
-            height: 100vh;
         }
         
         .dashboard {
             width: 100%;
             max-width: 1024px;
+            height: 100%; /* 強制填滿 body 扣除 padding 後的高度 */
             background: #FFFFFF;
-            border-radius: 24px; /* 加大圓角讓風格更現代 */
-            box-shadow: 0 12px 35px rgba(0, 0, 0, 0.06); /* 更柔和的陰影 */
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
             display: flex;
             flex-direction: column;
-            flex: 1;
         }
 
         .header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 18px 24px; /* 稍微放大頂部內距，增加呼吸感 */
-            background: linear-gradient(180deg, #F0F8FF 0%, #FFFFFF 100%); /* 更柔和的天藍漸層 */
+            padding: 18px 24px;
+            background: linear-gradient(180deg, #F0F8FF 0%, #FFFFFF 100%);
             border-bottom: 1px solid #E5E5EA;
-            border-top-left-radius: 24px;
-            border-top-right-radius: 24px;
+            border-top-left-radius: 20px;
+            border-top-right-radius: 20px;
+            flex-shrink: 0; /* 防止被擠壓 */
         }
         .header-left {
-            font-size: 4.2rem;
+            font-size: 4.5rem;
             font-weight: 200;
             line-height: 1;
             letter-spacing: -1.5px;
         }
         .header-center {
             text-align: left;
-            padding-left: 18px;
+            padding-left: 20px;
             flex: 1;
         }
         .header-center .day-of-week {
             font-size: 1.6rem;
             font-weight: 600;
             margin-bottom: 4px;
-            letter-spacing: -0.5px;
         }
         .header-center .date-loc {
-            font-size: 1rem;
+            font-size: 1.05rem;
             color: #8E8E93;
-            font-weight: 400;
         }
-        
         .header-right { text-align: right; }
         .header-right .temp-container {
             display: flex;
@@ -71,27 +77,27 @@
             justify-content: flex-end;
         }
         .header-right .current-emoji {
-            font-size: 3.2rem; /* 大幅放大頂部當下天氣圖案 */
+            font-size: 3rem; /* 頂部天氣圖案放大 */
             margin-right: 12px;
         }
         .header-right .temp {
-            font-size: 3.6rem;
+            font-size: 4rem;
             font-weight: 200;
             line-height: 1;
-            transition: color 0.5s ease;
             letter-spacing: -1px;
         }
         .header-right .weather-desc {
-            font-size: 1.1rem;
-            font-weight: 600; /* 加粗天氣描述更清晰 */
+            font-size: 1.15rem;
+            font-weight: 600;
             margin-top: 6px;
         }
-        .header-right .humidity { font-size: 0.9rem; color: #8E8E93; margin-top: 2px;}
+        .header-right .humidity { font-size: 0.95rem; color: #8E8E93; margin-top: 2px;}
 
         .main-content {
             display: flex;
+            flex: 1; /* 佔滿剩餘空間 */
             border-bottom: 1px solid #E5E5EA;
-            flex: 1;
+            min-height: 0; /* 舊版 flex 修正 */
         }
         
         .section {
@@ -99,6 +105,7 @@
             display: flex;
             flex-direction: column;
             width: 50%;
+            height: 100%;
         }
         .section-left { border-right: 1px solid #E5E5EA; }
         
@@ -111,7 +118,7 @@
             border-bottom: 1px solid #E5E5EA;
             font-weight: 600;
             font-size: 1.05rem;
-            color: #3A3A3C;
+            flex-shrink: 0;
         }
         
         .refresh-btn, .text-btn {
@@ -120,40 +127,41 @@
             color: #007AFF;
             font-size: 0.95rem;
             cursor: pointer;
-            font-weight: 600; /* 按鈕稍微加粗 */
+            font-weight: 600;
         }
 
-        .bus-list { padding: 0 24px; }
+        .bus-list { 
+            padding: 0 24px; 
+            overflow-y: auto; /* 內容過多時可局部滑動 */
+            flex: 1;
+        }
         .bus-item {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 13px 0;
-            border-bottom: 1px solid #F2F2F7; /* 換成更淡的分隔線 */
+            padding: 14px 0;
+            border-bottom: 1px solid #F2F2F7;
         }
         .bus-item:last-child { border-bottom: none; }
         .bus-route-info { display: flex; align-items: center; }
         .bus-route-info .route-num {
             background-color: #E3002B;
             color: #FFFFFF;
-            font-size: 1.25rem;
+            font-size: 1.3rem;
             font-weight: bold;
-            padding: 4px 12px; /* 優化標籤內距 */
-            border-radius: 8px; /* 加大標籤圓角 */
+            padding: 5px 12px;
+            border-radius: 8px;
             margin-right: 12px;
-            min-width: 50px;
+            min-width: 55px;
             text-align: center;
-            letter-spacing: -0.5px;
         }
         .bus-route-info .dest-info { display: flex; flex-direction: column; }
-        .bus-route-info .destination { font-size: 1.05rem; font-weight: 600; color: #1C1C1E; }
-        .bus-route-info .stop-name { font-size: 0.8rem; color: #8E8E93; margin-top: 2px; }
+        .bus-route-info .destination { font-size: 1.1rem; font-weight: 600; color: #1C1C1E; }
         .bus-eta {
-            font-size: 1.5rem;
-            font-weight: 700; /* 加粗時間數字 */
+            font-size: 1.6rem;
+            font-weight: 700;
             color: #34C759;
             text-align: right;
-            letter-spacing: -0.5px;
         }
         .bus-eta span.min-text {
             font-size: 0.9rem;
@@ -162,54 +170,55 @@
             margin: 0 6px 0 2px;
         }
 
-        .forecast-table-container { padding: 5px 24px; }
+        .forecast-table-container { 
+            padding: 0; 
+            flex: 1;
+            overflow-y: auto;
+        }
         .forecast-table { 
             width: 100%; 
             border-collapse: collapse; 
-            font-size: 0.95rem; 
-            table-layout: fixed; /* 固定排版避免因文字長度撐破 */
+            font-size: 1rem; 
+            table-layout: fixed; /* 強制套用我們設定的比例 */
         }
         .forecast-table th {
             text-align: center;
-            padding-bottom: 8px;
+            padding: 10px 8px;
             border-bottom: 1px solid #E5E5EA;
             font-weight: 600;
             color: #8E8E93;
-            font-size: 0.85rem;
+            font-size: 0.9rem;
+            background-color: #FFFFFF;
         }
-        .forecast-table th.left-align { text-align: left; }
         .forecast-table td {
-            padding: 12px 0;
+            padding: 14px 8px;
             border-bottom: 1px solid #F2F2F7;
             text-align: center;
             vertical-align: middle;
         }
         .forecast-table tr:last-child td { border-bottom: none; }
-        .forecast-table td.day-col { 
-            text-align: left; 
-            font-weight: 600; 
-            width: 14%; 
-            color: #1C1C1E; 
-            white-space: nowrap; /* 確保日期不會折行 */
-        }
+        
+        .forecast-table td.day-col { text-align: left; font-weight: 600; color: #1C1C1E; padding-left: 24px;}
+        
+        /* 解決天氣文字擠壓的關鍵：給予 50% 寬度並允許換行 */
         .forecast-table td.desc-col { 
             text-align: left; 
-            padding-right: 5px; 
-            width: 42%; 
-            font-size: 0.9rem; /* 稍微縮小，讓多行排版更舒適 */
-            line-height: 1.35; /* 放寬行高，允許天氣描述自然換行 */
+            font-size: 1rem;
+            line-height: 1.4;
+            white-space: normal; 
         }
         .forecast-table .wx-icon { 
-            font-size: 1.8rem; /* 顯著放大天氣預報圖案 */
+            font-size: 2rem; /* 預報天氣圖案巨型化 */
             margin-right: 8px; 
-            vertical-align: middle; 
+            vertical-align: middle;
         }
-        .forecast-table td.temp-col { font-weight: 700; font-size: 1.05rem; }
+        .forecast-table td.temp-col { font-weight: 700; font-size: 1.1rem; }
 
         .clocks-section {
             display: flex;
             background-color: #F9F9FB;
             border-bottom: 1px solid #E5E5EA;
+            flex-shrink: 0;
         }
         .clock-item {
             flex: 1;
@@ -226,45 +235,27 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 12px 24px; /* 增加底部空間 */
+            padding: 14px 24px;
             font-size: 0.85rem;
             color: #8E8E93;
             background-color: #FFFFFF;
-            border-bottom-left-radius: 24px;
-            border-bottom-right-radius: 24px;
+            border-bottom-left-radius: 20px;
+            border-bottom-right-radius: 20px;
+            flex-shrink: 0;
         }
 
         .modal-overlay {
-            display: none;
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.5);
-            justify-content: center;
-            align-items: center;
-            z-index: 100;
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.5); justify-content: center; align-items: center; z-index: 100;
         }
         .modal-content {
-            background: #fff;
-            padding: 24px;
-            border-radius: 18px;
-            width: 90%;
-            max-width: 400px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            background: #fff; padding: 24px; border-radius: 18px; width: 90%; max-width: 400px;
         }
-        .modal-content h3 { margin-bottom: 15px; font-size: 1.25rem; font-weight: 700;}
         .modal-content input, .modal-content select {
-            width: 100%;
-            padding: 12px;
-            margin-bottom: 15px;
-            border: 1px solid #D1D1D6;
-            border-radius: 10px;
-            font-size: 1.05rem;
+            width: 100%; padding: 12px; margin-bottom: 15px; border: 1px solid #D1D1D6; border-radius: 10px; font-size: 1.05rem;
         }
         .modal-btns { display: flex; justify-content: flex-end; gap: 10px; }
-        .btn {
-            padding: 10px 18px; border: none; border-radius: 10px;
-            cursor: pointer; font-size: 1.05rem; font-weight: 600;
-        }
+        .btn { padding: 10px 18px; border: none; border-radius: 10px; cursor: pointer; font-size: 1.05rem; font-weight: 600; }
         .btn-cancel { background: #E5E5EA; color: #1C1C1E; }
         .btn-save { background: #007AFF; color: #fff; }
     </style>
@@ -312,12 +303,13 @@
                 <table class="forecast-table">
                     <thead>
                         <tr>
-                            <th class="left-align" style="width: 14%;">日</th>
-                            <th class="left-align" style="width: 42%;">天氣</th>
-                            <th>高</th>
-                            <th>低</th>
-                            <th>濕度</th>
-                            <th>降</th>
+                            <!-- 嚴格限制欄寬比例，給「天氣描述」最多空間 -->
+                            <th style="width: 12%; text-align: left; padding-left: 24px;">日</th>
+                            <th style="width: 48%; text-align: left;">天氣</th>
+                            <th style="width: 9%;">高</th>
+                            <th style="width: 9%;">低</th>
+                            <th style="width: 12%;">濕度</th>
+                            <th style="width: 10%;">降</th>
                         </tr>
                     </thead>
                     <tbody id="forecast-list">
@@ -358,7 +350,7 @@
 <!-- 巴士設定 Modal -->
 <div class="modal-overlay" id="busModal">
     <div class="modal-content">
-        <h3>設定關注巴士站</h3>
+        <h3 style="margin-bottom: 15px; font-size: 1.25rem; font-weight: 700;">設定關注巴士站</h3>
         <p style="font-size:0.85rem; color:#8E8E93; margin-bottom:15px; line-height: 1.4;">請先輸入路線號碼，系統會搜尋該路線途經的車站。</p>
         
         <label style="font-weight: 600; font-size: 0.95rem; margin-bottom: 5px; display: block;">1. 路線號碼 (如 1A, 281A)</label>
@@ -487,14 +479,16 @@ var app = (function() {
                 }
                 if (data.weatherForecast && data.weatherForecast.length > 0) {
                     var html = "";
+                    // 取未來 5 天以適配畫面高度
                     var limit = Math.min(data.weatherForecast.length, 5); 
                     for (var i = 0; i < limit; i++) {
                         var day = data.weatherForecast[i];
-                        var weekStr = day.week.replace("星期", "周"); /* 將 星期一 改為 周一 節省空間 */
+                        // 將「星期一」替換成「周一」，節省空間
+                        var shortWeek = day.week.replace("星期", "周");
                         
                         html += "<tr>";
-                        html += "<td class='day-col'>" + weekStr + "</td>";
-                        html += "<td class='desc-col' title='" + day.forecastWeather + "'><span class='wx-icon'>" + getIOSEmojiIcon(day.ForecastIcon) + "</span> <span class='desc-text'>" + colorizeWeatherText(day.forecastWeather) + "</span></td>";
+                        html += "<td class='day-col'>" + shortWeek + "</td>";
+                        html += "<td class='desc-col'><span class='wx-icon'>" + getIOSEmojiIcon(day.ForecastIcon) + "</span> <span class='desc-text'>" + colorizeWeatherText(day.forecastWeather) + "</span></td>";
                         html += "<td class='temp-col' style='color: #FF3B30;'>" + day.forecastMaxtemp.value + "°</td>";
                         html += "<td class='temp-col' style='color: #007AFF;'>" + day.forecastMintemp.value + "°</td>";
                         var hum = (day.forecastMinrh && day.forecastMaxrh) ? day.forecastMinrh.value + "-" + day.forecastMaxrh.value + "%" : "--";
@@ -562,6 +556,7 @@ var app = (function() {
 
     function renderBusList(busData) {
         var html = "";
+        // 顯示 6 班車
         for (var i = 0; i < Math.min(busData.length, 6); i++) { 
             var bus = busData[i];
             html += '<div class="bus-item">';
