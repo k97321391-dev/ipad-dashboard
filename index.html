@@ -12,52 +12,56 @@
             font-family: -apple-system, BlinkMacSystemFont, "SF Pro TC", "SF Pro Text", "Helvetica Neue", Helvetica, Arial, sans-serif;
             background-color: #F2F2F7;
             color: #1C1C1E;
-            padding: 10px; /* 縮小外部間距 */
+            padding: 10px;
             display: flex;
             flex-direction: column;
             align-items: center;
             -webkit-font-smoothing: antialiased;
-            height: 100vh; /* 強制與螢幕等高 */
+            height: 100vh;
         }
         
         .dashboard {
             width: 100%;
             max-width: 1024px;
             background: #FFFFFF;
-            border-radius: 20px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+            border-radius: 24px; /* 加大圓角讓風格更現代 */
+            box-shadow: 0 12px 35px rgba(0, 0, 0, 0.06); /* 更柔和的陰影 */
             display: flex;
             flex-direction: column;
-            flex: 1; /* 讓白底儀表板往下撐滿螢幕剩餘空間 */
+            flex: 1;
         }
 
         .header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 15px 20px; /* 縮小內距 */
-            background: linear-gradient(180deg, #E3F2FD 0%, #FFFFFF 100%);
+            padding: 18px 24px; /* 稍微放大頂部內距，增加呼吸感 */
+            background: linear-gradient(180deg, #F0F8FF 0%, #FFFFFF 100%); /* 更柔和的天藍漸層 */
             border-bottom: 1px solid #E5E5EA;
+            border-top-left-radius: 24px;
+            border-top-right-radius: 24px;
         }
         .header-left {
-            font-size: 4rem; /* 稍微縮小字體以適應 A1455 橫屏 */
+            font-size: 4.2rem;
             font-weight: 200;
             line-height: 1;
-            letter-spacing: -1px;
+            letter-spacing: -1.5px;
         }
         .header-center {
             text-align: left;
-            padding-left: 15px;
+            padding-left: 18px;
             flex: 1;
         }
         .header-center .day-of-week {
-            font-size: 1.5rem;
+            font-size: 1.6rem;
             font-weight: 600;
-            margin-bottom: 2px;
+            margin-bottom: 4px;
+            letter-spacing: -0.5px;
         }
         .header-center .date-loc {
             font-size: 1rem;
             color: #8E8E93;
+            font-weight: 400;
         }
         
         .header-right { text-align: right; }
@@ -67,33 +71,34 @@
             justify-content: flex-end;
         }
         .header-right .current-emoji {
-            font-size: 2.5rem;
-            margin-right: 10px;
+            font-size: 2.6rem;
+            margin-right: 8px;
         }
         .header-right .temp {
-            font-size: 3.5rem; /* 稍微縮小 */
-            font-weight: 300;
+            font-size: 3.6rem;
+            font-weight: 200;
             line-height: 1;
             transition: color 0.5s ease;
+            letter-spacing: -1px;
         }
         .header-right .weather-desc {
             font-size: 1.1rem;
-            font-weight: 500;
-            margin-top: 5px;
+            font-weight: 600; /* 加粗天氣描述更清晰 */
+            margin-top: 6px;
         }
-        .header-right .humidity { font-size: 0.9rem; color: #8E8E93; }
+        .header-right .humidity { font-size: 0.9rem; color: #8E8E93; margin-top: 2px;}
 
         .main-content {
             display: flex;
             border-bottom: 1px solid #E5E5EA;
-            flex: 1; /* 讓中間的內容區塊自動延伸 */
+            flex: 1;
         }
         
         .section {
             flex: 1;
             display: flex;
             flex-direction: column;
-            width: 50%; /* 強制平分，相容舊 Safari flexbox */
+            width: 50%;
         }
         .section-left { border-right: 1px solid #E5E5EA; }
         
@@ -101,81 +106,97 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 10px 20px;
+            padding: 12px 24px;
             background-color: #F9F9FB;
             border-bottom: 1px solid #E5E5EA;
             font-weight: 600;
-            font-size: 1rem;
+            font-size: 1.05rem;
+            color: #3A3A3C;
         }
         
         .refresh-btn, .text-btn {
             border: none;
             background: transparent;
             color: #007AFF;
-            font-size: 0.9rem;
+            font-size: 0.95rem;
             cursor: pointer;
-            font-weight: 500;
+            font-weight: 600; /* 按鈕稍微加粗 */
         }
 
-        .bus-list { padding: 0 15px; }
+        .bus-list { padding: 0 24px; }
         .bus-item {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 12px 0; /* 調整為適應 2cm 空間 */
-            border-bottom: 1px solid #E5E5EA;
+            padding: 13px 0;
+            border-bottom: 1px solid #F2F2F7; /* 換成更淡的分隔線 */
         }
         .bus-item:last-child { border-bottom: none; }
         .bus-route-info { display: flex; align-items: center; }
         .bus-route-info .route-num {
             background-color: #E3002B;
             color: #FFFFFF;
-            font-size: 1.2rem;
+            font-size: 1.25rem;
             font-weight: bold;
-            padding: 3px 10px;
-            border-radius: 6px;
-            margin-right: 10px;
-            min-width: 45px;
+            padding: 4px 12px; /* 優化標籤內距 */
+            border-radius: 8px; /* 加大標籤圓角 */
+            margin-right: 12px;
+            min-width: 50px;
             text-align: center;
+            letter-spacing: -0.5px;
         }
         .bus-route-info .dest-info { display: flex; flex-direction: column; }
-        .bus-route-info .destination { font-size: 1rem; font-weight: 600; }
-        .bus-route-info .stop-name { font-size: 0.8rem; color: #8E8E93; }
+        .bus-route-info .destination { font-size: 1.05rem; font-weight: 600; color: #1C1C1E; }
+        .bus-route-info .stop-name { font-size: 0.8rem; color: #8E8E93; margin-top: 2px; }
         .bus-eta {
-            font-size: 1.4rem;
-            font-weight: bold;
+            font-size: 1.5rem;
+            font-weight: 700; /* 加粗時間數字 */
             color: #34C759;
             text-align: right;
+            letter-spacing: -0.5px;
         }
         .bus-eta span.min-text {
             font-size: 0.9rem;
-            font-weight: normal;
+            font-weight: 500;
             color: #8E8E93;
-            margin: 0 5px 0 2px;
+            margin: 0 6px 0 2px;
         }
 
-        .forecast-table-container { padding: 5px 15px; }
-        .forecast-table { width: 100%; border-collapse: collapse; font-size: 0.95rem; }
+        .forecast-table-container { padding: 5px 24px; }
+        .forecast-table { 
+            width: 100%; 
+            border-collapse: collapse; 
+            font-size: 0.95rem; 
+            table-layout: fixed; /* 固定排版避免因文字長度撐破 */
+        }
         .forecast-table th {
             text-align: center;
             padding-bottom: 8px;
             border-bottom: 1px solid #E5E5EA;
-            font-weight: 500;
+            font-weight: 600;
             color: #8E8E93;
             font-size: 0.85rem;
         }
         .forecast-table th.left-align { text-align: left; }
         .forecast-table td {
-            padding: 12px 0; /* 調整為適應 2cm 空間 */
-            border-bottom: 1px solid #E5E5EA;
+            padding: 12px 0;
+            border-bottom: 1px solid #F2F2F7;
             text-align: center;
             vertical-align: middle;
         }
         .forecast-table tr:last-child td { border-bottom: none; }
-        .forecast-table td.day-col { text-align: left; font-weight: 600; width: 15%; }
-        .forecast-table td.desc-col { text-align: left; padding-right: 5px; width: 40%; font-size: 0.9rem; }
-        .forecast-table .wx-icon { font-size: 1.1rem; margin-right: 5px; }
-        .forecast-table td.temp-col { font-weight: 600; font-size: 1rem; }
+        .forecast-table td.day-col { text-align: left; font-weight: 600; width: 14%; color: #1C1C1E; }
+        .forecast-table td.desc-col { 
+            text-align: left; 
+            padding-right: 5px; 
+            width: 42%; 
+            font-size: 0.95rem;
+            white-space: nowrap; /* 防折行 */
+            overflow: hidden;
+            text-overflow: ellipsis; /* 文字過長顯示省略號 */
+        }
+        .forecast-table .wx-icon { font-size: 1.2rem; margin-right: 6px; vertical-align: middle; }
+        .forecast-table td.temp-col { font-weight: 700; font-size: 1.05rem; }
 
         .clocks-section {
             display: flex;
@@ -185,21 +206,24 @@
         .clock-item {
             flex: 1;
             text-align: center;
-            padding: 15px 5px;
+            padding: 16px 5px;
             border-right: 1px solid #E5E5EA;
         }
         .clock-item:last-child { border-right: none; }
-        .clock-city { font-size: 0.9rem; font-weight: 500; color: #8E8E93; margin-bottom: 4px; }
-        .clock-time { font-size: 1.5rem; font-weight: 300; }
-        .clock-time span.day { font-size: 0.9rem; color: #8E8E93; margin-right: 5px; }
+        .clock-city { font-size: 0.85rem; font-weight: 600; color: #8E8E93; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px;}
+        .clock-time { font-size: 1.6rem; font-weight: 300; letter-spacing: -0.5px; }
+        .clock-time span.day { font-size: 0.95rem; color: #8E8E93; margin-right: 6px; font-weight: 500; }
 
         .footer {
             display: flex;
             justify-content: space-between;
-            padding: 10px 20px;
-            font-size: 0.8rem;
+            align-items: center;
+            padding: 12px 24px; /* 增加底部空間 */
+            font-size: 0.85rem;
             color: #8E8E93;
             background-color: #FFFFFF;
+            border-bottom-left-radius: 24px;
+            border-bottom-right-radius: 24px;
         }
 
         .modal-overlay {
@@ -213,25 +237,25 @@
         }
         .modal-content {
             background: #fff;
-            padding: 20px;
-            border-radius: 15px;
+            padding: 24px;
+            border-radius: 18px;
             width: 90%;
             max-width: 400px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
         }
-        .modal-content h3 { margin-bottom: 15px; font-size: 1.2rem; }
+        .modal-content h3 { margin-bottom: 15px; font-size: 1.25rem; font-weight: 700;}
         .modal-content input, .modal-content select {
             width: 100%;
-            padding: 10px;
+            padding: 12px;
             margin-bottom: 15px;
-            border: 1px solid #ccc;
-            border-radius: 8px;
-            font-size: 1rem;
+            border: 1px solid #D1D1D6;
+            border-radius: 10px;
+            font-size: 1.05rem;
         }
         .modal-btns { display: flex; justify-content: flex-end; gap: 10px; }
         .btn {
-            padding: 8px 15px; border: none; border-radius: 8px;
-            cursor: pointer; font-size: 1rem; font-weight: bold;
+            padding: 10px 18px; border: none; border-radius: 10px;
+            cursor: pointer; font-size: 1.05rem; font-weight: 600;
         }
         .btn-cancel { background: #E5E5EA; color: #1C1C1E; }
         .btn-save { background: #007AFF; color: #fff; }
@@ -280,8 +304,8 @@
                 <table class="forecast-table">
                     <thead>
                         <tr>
-                            <th class="left-align">日</th>
-                            <th class="left-align">天氣</th>
+                            <th class="left-align" style="width: 14%;">日</th>
+                            <th class="left-align" style="width: 42%;">天氣</th>
                             <th>高</th>
                             <th>低</th>
                             <th>濕度</th>
@@ -327,14 +351,14 @@
 <div class="modal-overlay" id="busModal">
     <div class="modal-content">
         <h3>設定關注巴士站</h3>
-        <p style="font-size:0.85rem; color:#8E8E93; margin-bottom:10px;">請先輸入路線號碼，系統會搜尋該路線途經的車站。</p>
+        <p style="font-size:0.85rem; color:#8E8E93; margin-bottom:15px; line-height: 1.4;">請先輸入路線號碼，系統會搜尋該路線途經的車站。</p>
         
-        <label>1. 路線號碼 (如 1A, 281A)</label>
+        <label style="font-weight: 600; font-size: 0.95rem; margin-bottom: 5px; display: block;">1. 路線號碼 (如 1A, 281A)</label>
         <input type="text" id="routeInput" placeholder="輸入路線號碼..." style="text-transform: uppercase;">
-        <button class="btn btn-save" style="width:100%; margin-bottom:15px;" onclick="app.searchRouteStops()">搜尋車站</button>
+        <button class="btn btn-save" style="width:100%; margin-bottom:20px;" onclick="app.searchRouteStops()">搜尋車站</button>
         
         <div id="stopSelectionArea" style="display:none;">
-            <label>2. 選擇方向與車站</label>
+            <label style="font-weight: 600; font-size: 0.95rem; margin-bottom: 5px; display: block;">2. 選擇方向與車站</label>
             <select id="stopSelect"></select>
             
             <div class="modal-btns">
@@ -342,7 +366,7 @@
                 <button class="btn btn-save" onclick="app.saveBusSetting()">儲存並載入</button>
             </div>
         </div>
-        <div id="modalMsg" style="color:red; font-size:0.85rem; margin-top:10px;"></div>
+        <div id="modalMsg" style="color:#FF3B30; font-size:0.9rem; margin-top:10px; font-weight: 500;"></div>
         
         <button class="btn btn-cancel" id="cancelSearchBtn" style="width:100%; margin-top:10px;" onclick="app.closeBusSettings()">關閉</button>
     </div>
@@ -354,7 +378,7 @@ var app = (function() {
     var lastBusUpdate = "--:--";
     var userStopId = localStorage.getItem("kmb_stop_id") || "";
     var userStopName = localStorage.getItem("kmb_stop_name") || "尚未設定車站";
-    var currentRouteData = []; // 暫存搜尋到的路線車站
+    var currentRouteData = [];
 
     function fetchJSON(url, callback) {
         var xhr = new XMLHttpRequest();
@@ -455,12 +479,12 @@ var app = (function() {
                 }
                 if (data.weatherForecast && data.weatherForecast.length > 0) {
                     var html = "";
-                    var limit = Math.min(data.weatherForecast.length, 5); /* 天氣預報改為 5 天以適應 2cm 空間 */
+                    var limit = Math.min(data.weatherForecast.length, 5); 
                     for (var i = 0; i < limit; i++) {
                         var day = data.weatherForecast[i];
                         html += "<tr>";
                         html += "<td class='day-col'>" + day.week + "</td>";
-                        html += "<td class='desc-col'><span class='wx-icon'>" + getIOSEmojiIcon(day.ForecastIcon) + "</span> <span class='desc-text'>" + colorizeWeatherText(day.forecastWeather) + "</span></td>";
+                        html += "<td class='desc-col' title='" + day.forecastWeather + "'><span class='wx-icon'>" + getIOSEmojiIcon(day.ForecastIcon) + "</span> <span class='desc-text'>" + colorizeWeatherText(day.forecastWeather) + "</span></td>";
                         html += "<td class='temp-col' style='color: #FF3B30;'>" + day.forecastMaxtemp.value + "°</td>";
                         html += "<td class='temp-col' style='color: #007AFF;'>" + day.forecastMintemp.value + "°</td>";
                         var hum = (day.forecastMinrh && day.forecastMaxrh) ? day.forecastMinrh.value + "-" + day.forecastMaxrh.value + "%" : "--";
@@ -494,12 +518,11 @@ var app = (function() {
                 var item = response.data[i];
                 if (!item.eta) continue;
 
-                // 兼容 iOS 9 日期解析
                 var etaStr = item.eta.replace(/-/g, '/').replace('T', ' ').split('+')[0];
                 var etaTime = new Date(etaStr).getTime();
                 var diffMin = Math.floor((etaTime - nowTime) / 60000);
                 
-                if (diffMin < 0) continue; // 已過站
+                if (diffMin < 0) continue; 
 
                 var key = item.route + "-" + item.dir + "-" + item.dest_tc;
                 if (!routesMap[key]) {
@@ -515,7 +538,6 @@ var app = (function() {
                 if (routesMap.hasOwnProperty(k)) parsedData.push(routesMap[k]);
             }
             
-            // 排序路線號碼 (數字前綴)
             parsedData.sort(function(a, b) {
                 return parseInt(a.route) - parseInt(b.route);
             });
@@ -530,7 +552,7 @@ var app = (function() {
 
     function renderBusList(busData) {
         var html = "";
-        for (var i = 0; i < Math.min(busData.length, 6); i++) { // 巴士列表改為 6 條以適應 2cm 空間
+        for (var i = 0; i < Math.min(busData.length, 6); i++) { 
             var bus = busData[i];
             html += '<div class="bus-item">';
             html += '  <div class="bus-route-info">';
@@ -578,7 +600,6 @@ var app = (function() {
         msgEl.style.color = "#8E8E93";
         msgEl.innerText = "搜尋中，請稍候...";
         
-        // 1. 取得路線去回程
         fetchJSON("https://data.etabus.gov.hk/v1/transport/kmb/route-stop/" + route + "/inbound/1", function(errIn, dataIn) {
             fetchJSON("https://data.etabus.gov.hk/v1/transport/kmb/route-stop/" + route + "/outbound/1", function(errOut, dataOut) {
                 var allStops = [];
@@ -586,20 +607,16 @@ var app = (function() {
                 if (!errOut && dataOut.data) allStops = allStops.concat(dataOut.data);
                 
                 if (allStops.length === 0) {
-                    msgEl.style.color = "red";
+                    msgEl.style.color = "#FF3B30";
                     msgEl.innerText = "找不到該路線的車站，請檢查號碼是否正確。";
                     return;
                 }
 
-                // 2. 由於舊設備無法一次打幾十個 API 查詢站名，我們直接載入一個簡化的全港站名清單 (如果有的話)
-                // 但為了精簡，我們只顯示 ID (或逐一查詢前幾個，這會比較慢)。
-                // 為了流暢體驗，這裡採用批次非同步查詢站名
                 msgEl.innerText = "正在解析車站名稱...";
                 currentRouteData = allStops;
                 var selectEl = document.getElementById("stopSelect");
                 selectEl.innerHTML = "";
                 
-                // 限制最多處理 60 個站以防舊機當機
                 var limit = Math.min(allStops.length, 60);
                 var completed = 0;
 
@@ -607,7 +624,7 @@ var app = (function() {
                     (function(stopObj, index) {
                         fetchJSON("https://data.etabus.gov.hk/v1/transport/kmb/stop/" + stopObj.stop, function(err, stopData) {
                             completed++;
-                            var stopName = stopObj.stop; // fallback
+                            var stopName = stopObj.stop; 
                             if (!err && stopData && stopData.data) {
                                 stopName = stopData.data.name_tc;
                             }
@@ -644,8 +661,8 @@ var app = (function() {
         
         closeBusSettings();
         document.getElementById("bus-list").innerHTML = '<div style="padding:20px;text-align:center;color:#8E8E93;">載入新車站資料中...</div>';
-        updateLocalTime(); // 更新標題上的站名
-        updateBusData(); // 立即重新抓資料
+        updateLocalTime();
+        updateBusData();
     }
 
     function init() {
