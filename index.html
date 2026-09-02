@@ -4,76 +4,50 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <title>資訊儀表板</title>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
         
-        /* 針對舊版 iOS 確保 100% 填滿螢幕 */
+        /* 針對舊版 iOS 確保 100% 填滿螢幕的終極解法 */
         html, body {
             height: 100%;
             width: 100%;
-            overflow: hidden; 
+            overflow: hidden; /* 防止整個頁面出現原生捲軸 */
         }
         
         body {
-            font-family: -apple-system, "Helvetica Neue", Helvetica, Arial, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro TC", "SF Pro Text", "Helvetica Neue", Helvetica, Arial, sans-serif;
             background-color: #F2F2F7;
             color: #1C1C1E;
             padding: 12px; 
             position: absolute;
             top: 0; left: 0; right: 0; bottom: 0;
-            
-            /* 老式 Flexbox 支援 iOS 9 Safari */
-            display: -webkit-box;
-            display: -webkit-flex;
             display: flex;
-            
-            -webkit-box-pack: center;
-            -webkit-justify-content: center;
             justify-content: center;
-            
             -webkit-font-smoothing: antialiased;
         }
         
         .dashboard {
             width: 100%;
-            max-width: 1024px; /* iPad Mini 解析度寬度 */
-            height: 100%; 
+            max-width: 1024px;
+            height: 100%; /* 強制填滿 body 扣除 padding 後的高度 */
             background: #FFFFFF;
             border-radius: 20px;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
-            
-            display: -webkit-box;
-            display: -webkit-flex;
             display: flex;
-            
-            -webkit-box-orient: vertical;
-            -webkit-box-direction: normal;
-            -webkit-flex-direction: column;
             flex-direction: column;
         }
 
         .header {
-            display: -webkit-box;
-            display: -webkit-flex;
             display: flex;
-            
-            -webkit-box-pack: justify;
-            -webkit-justify-content: space-between;
             justify-content: space-between;
-            
-            -webkit-box-align: center;
-            -webkit-align-items: center;
             align-items: center;
-            
             padding: 18px 24px;
             background: linear-gradient(180deg, #F0F8FF 0%, #FFFFFF 100%);
             border-bottom: 1px solid #E5E5EA;
             border-top-left-radius: 20px;
             border-top-right-radius: 20px;
-            
-            -webkit-flex-shrink: 0;
             flex-shrink: 0; 
         }
         .header-left {
@@ -85,8 +59,6 @@
         .header-center {
             text-align: left;
             padding-left: 20px;
-            -webkit-box-flex: 1;
-            -webkit-flex: 1;
             flex: 1;
         }
         .header-center .day-of-week {
@@ -98,26 +70,17 @@
             font-size: 1.05rem;
             color: #8E8E93;
         }
-        
         .header-right { 
             text-align: right; 
-            max-width: 45%; 
+            max-width: 45%; /* 限制右側寬度避免文字太長蓋過中間 */
         }
         .header-right .temp-container {
-            display: -webkit-box;
-            display: -webkit-flex;
             display: flex;
-            
-            -webkit-box-align: center;
-            -webkit-align-items: center;
             align-items: center;
-            
-            -webkit-box-pack: end;
-            -webkit-justify-content: flex-end;
             justify-content: flex-end;
         }
         .header-right .current-emoji {
-            font-size: 3.5rem; 
+            font-size: 3.5rem; /* 再稍微放大當前天氣圖案 */
             margin-right: 12px;
         }
         .header-right .temp {
@@ -141,63 +104,30 @@
         .header-right .humidity { font-size: 0.95rem; color: #8E8E93; margin-top: 4px;}
 
         .main-content {
-            display: -webkit-box;
-            display: -webkit-flex;
             display: flex;
-            
-            /* iPad mini 1024寬度，適合橫排 */
-            -webkit-box-orient: horizontal;
-            -webkit-box-direction: normal;
-            -webkit-flex-direction: row;
-            flex-direction: row;
-            
-            -webkit-box-flex: 1;
-            -webkit-flex: 1;
             flex: 1; 
-            
             border-bottom: 1px solid #E5E5EA;
             min-height: 0; 
         }
         
         .section {
-            -webkit-box-flex: 1;
-            -webkit-flex: 1;
             flex: 1;
-            
-            display: -webkit-box;
-            display: -webkit-flex;
             display: flex;
-            
-            -webkit-box-orient: vertical;
-            -webkit-box-direction: normal;
-            -webkit-flex-direction: column;
             flex-direction: column;
-            
             width: 50%;
             height: 100%;
         }
         .section-left { border-right: 1px solid #E5E5EA; }
         
         .section-header {
-            display: -webkit-box;
-            display: -webkit-flex;
             display: flex;
-            
-            -webkit-box-pack: justify;
-            -webkit-justify-content: space-between;
             justify-content: space-between;
-            
-            -webkit-box-align: center;
-            -webkit-align-items: center;
             align-items: center;
-            
             padding: 12px 24px;
             background-color: #F9F9FB;
             border-bottom: 1px solid #E5E5EA;
             font-weight: 600;
             font-size: 1.05rem;
-            
-            -webkit-flex-shrink: 0;
             flex-shrink: 0;
         }
         
@@ -213,36 +143,17 @@
         .bus-list { 
             padding: 0 24px; 
             overflow-y: auto; 
-            -webkit-overflow-scrolling: touch; /* 確保 iOS 滾動順暢 */
-            -webkit-box-flex: 1;
-            -webkit-flex: 1;
             flex: 1;
         }
         .bus-item {
-            display: -webkit-box;
-            display: -webkit-flex;
             display: flex;
-            
-            -webkit-box-pack: justify;
-            -webkit-justify-content: space-between;
             justify-content: space-between;
-            
-            -webkit-box-align: center;
-            -webkit-align-items: center;
             align-items: center;
-            
-            padding: 18px 0; 
+            padding: 18px 0; /* 加大行距，讓版面看起來更舒適不空洞 */
             border-bottom: 1px solid #F2F2F7;
         }
         .bus-item:last-child { border-bottom: none; }
-        .bus-route-info { 
-            display: -webkit-box; 
-            display: -webkit-flex; 
-            display: flex; 
-            -webkit-box-align: center; 
-            -webkit-align-items: center; 
-            align-items: center; 
-        }
+        .bus-route-info { display: flex; align-items: center; }
         .bus-route-info .route-num {
             background-color: #E3002B;
             color: #FFFFFF;
@@ -254,15 +165,7 @@
             min-width: 55px;
             text-align: center;
         }
-        .bus-route-info .dest-info { 
-            display: -webkit-box; 
-            display: -webkit-flex; 
-            display: flex; 
-            -webkit-box-orient: vertical; 
-            -webkit-box-direction: normal; 
-            -webkit-flex-direction: column; 
-            flex-direction: column; 
-        }
+        .bus-route-info .dest-info { display: flex; flex-direction: column; }
         .bus-route-info .destination { font-size: 1.1rem; font-weight: 600; color: #1C1C1E; }
         .bus-eta {
             font-size: 1.6rem;
@@ -279,11 +182,8 @@
 
         .forecast-table-container { 
             padding: 0; 
-            -webkit-box-flex: 1;
-            -webkit-flex: 1;
             flex: 1;
             overflow-y: auto;
-            -webkit-overflow-scrolling: touch;
         }
         .forecast-table { 
             width: 100%; 
@@ -324,19 +224,12 @@
         .forecast-table td.temp-col { font-weight: 700; font-size: 1.1rem; }
 
         .clocks-section {
-            display: -webkit-box;
-            display: -webkit-flex;
             display: flex;
-            
             background-color: #F9F9FB;
             border-bottom: 1px solid #E5E5EA;
-            
-            -webkit-flex-shrink: 0;
             flex-shrink: 0;
         }
         .clock-item {
-            -webkit-box-flex: 1;
-            -webkit-flex: 1;
             flex: 1;
             text-align: center;
             padding: 16px 5px;
@@ -348,72 +241,29 @@
         .clock-time span.day { font-size: 0.95rem; color: #8E8E93; margin-right: 6px; font-weight: 500; }
 
         .footer {
-            display: -webkit-box;
-            display: -webkit-flex;
             display: flex;
-            
-            -webkit-box-pack: justify;
-            -webkit-justify-content: space-between;
             justify-content: space-between;
-            
-            -webkit-box-align: center;
-            -webkit-align-items: center;
             align-items: center;
-            
             padding: 14px 24px;
             font-size: 0.85rem;
             color: #8E8E93;
             background-color: #FFFFFF;
             border-bottom-left-radius: 20px;
             border-bottom-right-radius: 20px;
-            
-            -webkit-flex-shrink: 0;
             flex-shrink: 0;
         }
 
         .modal-overlay {
-            display: none; 
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.5); 
-            z-index: 100;
-            /* 因舊版 Safari 對 fixed + flex 支援可能有問題，改用絕對定位居中 */
-            text-align: center; 
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.5); justify-content: center; align-items: center; z-index: 100;
         }
-        
-        /* 輔助垂直置中的幽靈元素 */
-        .modal-overlay:before {
-            content: '';
-            display: inline-block;
-            height: 100%;
-            vertical-align: middle;
-        }
-
         .modal-content {
-            background: #fff; 
-            padding: 24px; 
-            border-radius: 18px; 
-            width: 90%; 
-            max-width: 400px;
-            
-            display: inline-block;
-            vertical-align: middle;
-            text-align: left; /* 將文字對齊改回左邊 */
+            background: #fff; padding: 24px; border-radius: 18px; width: 90%; max-width: 400px;
         }
         .modal-content input, .modal-content select {
             width: 100%; padding: 12px; margin-bottom: 15px; border: 1px solid #D1D1D6; border-radius: 10px; font-size: 1.05rem;
         }
-        
-        /* Modal 底部按鈕區 */
-        .modal-btns { 
-            /* 針對舊版 iOS，使用浮動 (Float) 作為按鈕排版的備案，避免 Flex box 錯誤 */
-            overflow: hidden; 
-            margin-top: 10px;
-        }
-        .modal-btns .btn {
-            float: right;
-            margin-left: 10px;
-        }
-        
+        .modal-btns { display: flex; justify-content: flex-end; gap: 10px; }
         .btn { padding: 10px 18px; border: none; border-radius: 10px; cursor: pointer; font-size: 1.05rem; font-weight: 600; }
         .btn-cancel { background: #E5E5EA; color: #1C1C1E; }
         .btn-save { background: #007AFF; color: #fff; }
@@ -513,18 +363,17 @@
             <select id="stopSelect"></select>
             
             <div class="modal-btns">
-                <button class="btn btn-save" onclick="app.saveBusSetting()">儲存並載入</button>
                 <button class="btn btn-cancel" onclick="app.closeBusSettings()">取消</button>
+                <button class="btn btn-save" onclick="app.saveBusSetting()">儲存並載入</button>
             </div>
         </div>
         <div id="modalMsg" style="color:#FF3B30; font-size:0.9rem; margin-top:10px; font-weight: 500;"></div>
         
-        <button class="btn btn-cancel" id="cancelSearchBtn" style="width:100%; margin-top:10px; clear: both;" onclick="app.closeBusSettings()">關閉</button>
+        <button class="btn btn-cancel" id="cancelSearchBtn" style="width:100%; margin-top:10px;" onclick="app.closeBusSettings()">關閉</button>
     </div>
 </div>
 
 <script>
-// 確保不使用 ES6 的 const, let, () => 等，保持使用 var 與 function
 var app = (function() {
     var lastWeatherUpdate = "--:--";
     var lastBusUpdate = "--:--";
@@ -625,6 +474,7 @@ var app = (function() {
         fetchJSON("https://data.weather.gov.hk/weatherAPI/opendata/weather.php?dataType=fnd&lang=tc", function(err, data) {
             if (!err && data) {
                 if (data.generalSituation) {
+                    // 解除 15 字限制，讓 CSS 控制兩行顯示
                     var desc = data.generalSituation.split("。")[0];
                     document.getElementById("current-weather-desc").innerHTML = colorizeWeatherText(desc);
                 }
@@ -671,7 +521,6 @@ var app = (function() {
                 var item = response.data[i];
                 if (!item.eta) continue;
 
-                // 處理舊版 Safari 的日期解析問題: 必須是 YYYY/MM/DD HH:mm:ss
                 var etaStr = item.eta.replace(/-/g, '/').replace('T', ' ').split('+')[0];
                 var etaTime = new Date(etaStr).getTime();
                 var diffMin = Math.floor((etaTime - nowTime) / 60000);
@@ -690,6 +539,7 @@ var app = (function() {
             var parsedData = [];
             for (var k in routesMap) {
                 if (routesMap.hasOwnProperty(k)) {
+                    // 修復：確保 ETA 時間由小到大排序 (解決 8分 20分 8分 的錯亂問題)
                     routesMap[k].etas.sort(function(a, b) { return a - b; });
                     parsedData.push(routesMap[k]);
                 }
@@ -709,6 +559,7 @@ var app = (function() {
 
     function renderBusList(busData) {
         var html = "";
+        // 放大到顯示 8 班車，並配合 overflow-y 滑動
         for (var i = 0; i < Math.min(busData.length, 8); i++) { 
             var bus = busData[i];
             html += '<div class="bus-item">';
@@ -738,7 +589,7 @@ var app = (function() {
     }
 
     function openBusSettings() {
-        document.getElementById("busModal").style.display = "block"; // 舊版瀏覽器對 flex 遮罩支援不好，改用 block
+        document.getElementById("busModal").style.display = "flex";
         document.getElementById("routeInput").value = "";
         document.getElementById("stopSelectionArea").style.display = "none";
         document.getElementById("cancelSearchBtn").style.display = "block";
@@ -760,8 +611,8 @@ var app = (function() {
         fetchJSON("https://data.etabus.gov.hk/v1/transport/kmb/route-stop/" + route + "/inbound/1", function(errIn, dataIn) {
             fetchJSON("https://data.etabus.gov.hk/v1/transport/kmb/route-stop/" + route + "/outbound/1", function(errOut, dataOut) {
                 var allStops = [];
-                if (!errIn && dataIn && dataIn.data) allStops = allStops.concat(dataIn.data);
-                if (!errOut && dataOut && dataOut.data) allStops = allStops.concat(dataOut.data);
+                if (!errIn && dataIn.data) allStops = allStops.concat(dataIn.data);
+                if (!errOut && dataOut.data) allStops = allStops.concat(dataOut.data);
                 
                 if (allStops.length === 0) {
                     msgEl.style.color = "#FF3B30";
