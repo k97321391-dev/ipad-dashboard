@@ -35,8 +35,8 @@
             background: #FFFFFF;
             border-radius: 20px;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
-            display: flex;
-            flex-direction: column;
+            /* 移除 display: flex; 改為相對定位作為內部絕對定位的容器 */
+            position: relative;
         }
 
         .header {
@@ -48,7 +48,10 @@
             border-bottom: 1px solid #E5E5EA;
             border-top-left-radius: 20px;
             border-top-right-radius: 20px;
-            flex-shrink: 0; 
+            /* 鎖定 Header 高度 */
+            height: 110px; 
+            position: absolute;
+            top: 0; left: 0; right: 0;
         }
         .header-left {
             font-size: 4.5rem;
@@ -94,20 +97,46 @@
             font-weight: 600;
             margin-top: 8px;
             line-height: 1.3;
-            /* 允許換行，最多顯示兩行 */
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
+            /* 強制限制高度並隱藏溢出，取代舊版可能失效的 line-clamp */
+            height: 2.6em; 
             overflow: hidden;
             white-space: normal;
+            text-overflow: ellipsis;
         }
         .header-right .humidity { font-size: 0.95rem; color: #8E8E93; margin-top: 4px;}
 
+        /* 中間內容區：放棄 Flex 高度，改用絕對定位釘死 */
         .main-content {
             display: flex;
-            flex: 1; 
+            position: absolute;
+            top: 110px; /* Header 的高度 */
+            bottom: 140px; /* 預留給 Clocks (約90px) + Footer (約50px) 的高度 */
+            left: 0; right: 0;
             border-bottom: 1px solid #E5E5EA;
-            min-height: 0; 
+        }
+        
+        .section {
+            flex: 1;
+            /* 舊版 iOS Safari 兼容：確保子元素知道自己要填滿 */
+            width: 50%;
+            height: 100%;
+            position: relative; 
+        }
+        .section-left { border-right: 1px solid #E5E5EA; }
+        
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 24px;
+            background-color: #F9F9FB;
+            border-bottom: 1px solid #E5E5EA;
+            font-weight: 600;
+            font-size: 1.05rem;
+            /* 鎖死標題列高度 */
+            height: 45px;
+            position: absolute;
+            top: 0; left: 0; right: 0;
         }
         
         .section {
@@ -140,11 +169,18 @@
             font-weight: 600;
         }
 
-        .bus-list { 
+        /* 列表容器：使用絕對定位填滿剩餘空間，並開啟平滑滾動 */
+        .bus-list, .forecast-table-container { 
+            position: absolute;
+            top: 45px; /* section-header 的高度 */
+            bottom: 0; left: 0; right: 0;
             padding: 0 24px; 
             overflow-y: auto; 
-            flex: 1;
+            -webkit-overflow-scrolling: touch; /* 舊版 iOS 平滑滾動必備 */
         }
+        
+        /* 移除原有的 forecast-table-container 額外設定，因為已經合併到上面了 */
+        
         .bus-item {
             display: flex;
             justify-content: space-between;
@@ -227,7 +263,18 @@
             display: flex;
             background-color: #F9F9FB;
             border-bottom: 1px solid #E5E5EA;
-            flex-shrink: 0;
+            /* 釘死在底部 Footer 之上 */
+            position: absolute;
+            bottom: 50px; left: 0; right: 0;
+            height: 90px;
+        }
+        .clock-item {
+            flex: 1;
+            text-align: center;
+            padding: 16px 5px;
+            border-right: 1px solid #E5E5EA;
+            /* 防止舊版 Flex 失效被壓縮 */
+            min-width: 0; 
         }
         .clock-item {
             flex: 1;
@@ -250,10 +297,15 @@
             background-color: #FFFFFF;
             border-bottom-left-radius: 20px;
             border-bottom-right-radius: 20px;
-            flex-shrink: 0;
+            /* 釘死在最底部 */
+            position: absolute;
+            bottom: 0; left: 0; right: 0;
+            height: 50px;
         }
 
         .modal-overlay {
+            /* 在舊版 iOS 中，fixed position 有時會亂跑，這部分我先保留您的原寫法，
+               如果對話框有問題我們再改用 absolute 蓋住整個 dashboard */
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0,0,0,0.5); justify-content: center; align-items: center; z-index: 100;
         }
