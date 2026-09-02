@@ -9,11 +9,10 @@
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
         
-        /* 針對舊版 iOS 確保 100% 填滿螢幕的終極解法 */
         html, body {
             height: 100%;
             width: 100%;
-            overflow: hidden; /* 防止整個頁面出現原生捲軸 */
+            overflow: hidden; /* 防止原生捲軸 */
         }
         
         body {
@@ -28,41 +27,41 @@
             -webkit-font-smoothing: antialiased;
         }
         
+        /* 改用絕對定位，完美解決 iOS 9 破版問題 */
         .dashboard {
+            position: relative;
             width: 100%;
             max-width: 1024px;
-            height: 100%; /* 強制填滿 body 扣除 padding 後的高度 */
+            height: 100%;
             background: #FFFFFF;
             border-radius: 20px;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
-            /* 移除 display: flex; 改為相對定位作為內部絕對定位的容器 */
-            position: relative;
+            overflow: hidden; /* 確保內容不會跑出圓角外 */
         }
 
         .header {
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 120px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 18px 24px;
+            padding: 0 24px;
             background: linear-gradient(180deg, #F0F8FF 0%, #FFFFFF 100%);
             border-bottom: 1px solid #E5E5EA;
-            border-top-left-radius: 20px;
-            border-top-right-radius: 20px;
-            /* 鎖定 Header 高度 */
-            height: 110px; 
-            position: absolute;
-            top: 0; left: 0; right: 0;
         }
         .header-left {
             font-size: 4.5rem;
             font-weight: 200;
             line-height: 1;
             letter-spacing: -1.5px;
+            min-width: 160px;
         }
         .header-center {
             text-align: left;
             padding-left: 20px;
             flex: 1;
+            min-width: 0; /* 舊版 Webkit flexbug 修復 */
         }
         .header-center .day-of-week {
             font-size: 1.6rem;
@@ -75,7 +74,9 @@
         }
         .header-right { 
             text-align: right; 
-            max-width: 50%; /* 放寬到 50%，給溫度更多空間 */
+            width: 48%; /* 放寬寬度 */
+            min-width: 0; 
+            padding-right: 10px; /* 給予右側溫度一點呼吸空間，不再貼邊 */
         }
         .header-right .temp-container {
             display: flex;
@@ -83,81 +84,53 @@
             justify-content: flex-end;
         }
         .header-right .current-emoji {
-            font-size: 3.2rem; /* 稍微縮小圖示 */
-            margin-right: 10px;
+            font-size: 3.2rem; /* 稍微縮小圖示以留白 */
+            margin-right: 12px;
         }
         .header-right .temp {
-            font-size: 3.8rem; /* 稍微縮小溫度數字 */
+            font-size: 3.8rem; /* 稍微縮小溫度以留白 */
             font-weight: 200;
             line-height: 1;
             letter-spacing: -1px;
         }
         .header-right .weather-desc {
-            font-size: 1.05rem; /* 稍微縮小字體 */
+            font-size: 1.05rem;
             font-weight: 600;
             margin-top: 8px;
             line-height: 1.3;
-            /* 強制限制高度並隱藏溢出 */
-            height: 2.6em; 
-            overflow: hidden;
-            white-space: normal;
-            text-overflow: ellipsis;
+            color: #1C1C1E;
         }
         .header-right .humidity { font-size: 0.95rem; color: #8E8E93; margin-top: 4px;}
 
-        /* 中間內容區：放棄 Flex 高度，改用絕對定位釘死 */
+        /* 中間內容區塊 */
         .main-content {
-            display: flex;
             position: absolute;
-            top: 110px; /* Header 的高度 */
-            bottom: 140px; /* 預留給 Clocks (約90px) + Footer (約50px) 的高度 */
+            top: 120px; 
+            bottom: 130px; /* Clocks(80) + Footer(50) */
             left: 0; right: 0;
+            display: flex; 
             border-bottom: 1px solid #E5E5EA;
         }
         
         .section {
-            flex: 1;
-            /* 舊版 iOS Safari 兼容：確保子元素知道自己要填滿 */
+            position: relative;
             width: 50%;
             height: 100%;
-            position: relative; 
         }
         .section-left { border-right: 1px solid #E5E5EA; }
         
         .section-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 12px 24px;
-            background-color: #F9F9FB;
-            border-bottom: 1px solid #E5E5EA;
-            font-weight: 600;
-            font-size: 1.05rem;
-            /* 鎖死標題列高度 */
-            height: 45px;
             position: absolute;
             top: 0; left: 0; right: 0;
-        }
-        
-        .section {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            width: 50%;
-            height: 100%;
-        }
-        .section-left { border-right: 1px solid #E5E5EA; }
-        
-        .section-header {
+            height: 48px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 12px 24px;
+            padding: 0 24px;
             background-color: #F9F9FB;
             border-bottom: 1px solid #E5E5EA;
             font-weight: 600;
             font-size: 1.05rem;
-            flex-shrink: 0;
         }
         
         .refresh-btn, .text-btn {
@@ -169,23 +142,20 @@
             font-weight: 600;
         }
 
-        /* 列表容器：使用絕對定位填滿剩餘空間，並開啟平滑滾動 */
+        /* 絕對定位的滾動區域 */
         .bus-list, .forecast-table-container { 
             position: absolute;
-            top: 45px; /* section-header 的高度 */
-            bottom: 0; left: 0; right: 0;
-            padding: 0 24px; 
+            top: 48px; bottom: 0; left: 0; right: 0;
             overflow-y: auto; 
-            -webkit-overflow-scrolling: touch; /* 舊版 iOS 平滑滾動必備 */
+            -webkit-overflow-scrolling: touch; /* 恢復 iOS 平滑滾動 */
         }
-        
-        /* 移除原有的 forecast-table-container 額外設定，因為已經合併到上面了 */
+        .bus-list { padding: 0 24px; }
         
         .bus-item {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 18px 0; /* 加大行距，讓版面看起來更舒適不空洞 */
+            padding: 18px 0;
             border-bottom: 1px solid #F2F2F7;
         }
         .bus-item:last-child { border-bottom: none; }
@@ -203,24 +173,20 @@
         }
         .bus-route-info .dest-info { display: flex; flex-direction: column; }
         .bus-route-info .destination { font-size: 1.1rem; font-weight: 600; color: #1C1C1E; }
+        
         .bus-eta {
-            font-size: 1.6rem;
+            font-size: 1.45rem; /* 縮小一點以容納 4 班車 */
             font-weight: 700;
             color: #34C759;
             text-align: right;
         }
         .bus-eta span.min-text {
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             font-weight: 500;
             color: #8E8E93;
             margin: 0 6px 0 2px;
         }
 
-        .forecast-table-container { 
-            padding: 0; 
-            flex: 1;
-            overflow-y: auto;
-        }
         .forecast-table { 
             width: 100%; 
             border-collapse: collapse; 
@@ -260,52 +226,38 @@
         .forecast-table td.temp-col { font-weight: 700; font-size: 1.1rem; }
 
         .clocks-section {
+            position: absolute;
+            bottom: 50px; left: 0; right: 0;
+            height: 80px;
             display: flex;
             background-color: #F9F9FB;
             border-bottom: 1px solid #E5E5EA;
-            /* 釘死在底部 Footer 之上 */
-            position: absolute;
-            bottom: 50px; left: 0; right: 0;
-            height: 90px;
         }
         .clock-item {
             flex: 1;
             text-align: center;
-            padding: 16px 5px;
-            border-right: 1px solid #E5E5EA;
-            /* 防止舊版 Flex 失效被壓縮 */
-            min-width: 0; 
-        }
-        .clock-item {
-            flex: 1;
-            text-align: center;
-            padding: 16px 5px;
+            padding: 14px 5px;
             border-right: 1px solid #E5E5EA;
         }
         .clock-item:last-child { border-right: none; }
-        .clock-city { font-size: 0.85rem; font-weight: 600; color: #8E8E93; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px;}
+        .clock-city { font-size: 0.85rem; font-weight: 600; color: #8E8E93; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.5px;}
         .clock-time { font-size: 1.6rem; font-weight: 300; letter-spacing: -0.5px; }
         .clock-time span.day { font-size: 0.95rem; color: #8E8E93; margin-right: 6px; font-weight: 500; }
 
         .footer {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 14px 24px;
-            font-size: 0.85rem;
-            color: #8E8E93;
-            background-color: #FFFFFF;
-            border-bottom-left-radius: 20px;
-            border-bottom-right-radius: 20px;
-            /* 釘死在最底部 */
             position: absolute;
             bottom: 0; left: 0; right: 0;
             height: 50px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 24px;
+            font-size: 0.85rem;
+            color: #8E8E93;
+            background-color: #FFFFFF;
         }
 
         .modal-overlay {
-            /* 在舊版 iOS 中，fixed position 有時會亂跑，這部分我先保留您的原寫法，
-               如果對話框有問題我們再改用 absolute 蓋住整個 dashboard */
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0,0,0,0.5); justify-content: center; align-items: center; z-index: 100;
         }
@@ -429,8 +381,10 @@
 var app = (function() {
     var lastWeatherUpdate = "--:--";
     var lastBusUpdate = "--:--";
-    var userStopId = localStorage.getItem("kmb_stop_id") || "";
-    var userStopName = localStorage.getItem("kmb_stop_name") || "尚未設定車站";
+    
+    // 正確的預設車站：大埔安祥路 (往九龍方向 TP536)
+    var userStopId = localStorage.getItem("kmb_stop_id") || "5D6FB6C3F67A70DC"; 
+    var userStopName = localStorage.getItem("kmb_stop_name") || "大埔安祥路 (TP536)";
     var currentRouteData = [];
 
     function fetchJSON(url, callback) {
@@ -527,9 +481,9 @@ var app = (function() {
             if (!err && data) {
                 if (data.generalSituation) {
                     var desc = data.generalSituation.split("。")[0];
-                    // 在 JS 層級做文字截斷，視覺上更自然
-                    if (desc.length > 35) {
-                        desc = desc.substring(0, 35) + "...";
+                    // 主動截斷，避免字數過長推擠排版
+                    if (desc.length > 38) {
+                        desc = desc.substring(0, 38) + "...";
                     }
                     document.getElementById("current-weather-desc").innerHTML = colorizeWeatherText(desc);
                 }
@@ -580,13 +534,17 @@ var app = (function() {
                 var etaTime = new Date(etaStr).getTime();
                 var diffMin = Math.floor((etaTime - nowTime) / 60000);
                 
-                if (diffMin < 0) continue; 
+                // 放寬時間誤差，避免過濾掉剛剛到達的 0 分鐘巴士
+                if (diffMin < -2) continue; 
+                if (diffMin < 0) diffMin = 0; 
 
                 var key = item.route + "-" + item.dir + "-" + item.dest_tc;
                 if (!routesMap[key]) {
                     routesMap[key] = { route: item.route, dest: item.dest_tc, etas: [] };
                 }
-                if (routesMap[key].etas.length < 3) {
+                
+                // 正確設定：最多顯示 4 班車
+                if (routesMap[key].etas.length < 4) {
                     routesMap[key].etas.push(diffMin);
                 }
             }
@@ -594,7 +552,6 @@ var app = (function() {
             var parsedData = [];
             for (var k in routesMap) {
                 if (routesMap.hasOwnProperty(k)) {
-                    // 修復：確保 ETA 時間由小到大排序 (解決 8分 20分 8分 的錯亂問題)
                     routesMap[k].etas.sort(function(a, b) { return a - b; });
                     parsedData.push(routesMap[k]);
                 }
@@ -614,7 +571,6 @@ var app = (function() {
 
     function renderBusList(busData) {
         var html = "";
-        // 放大到顯示 8 班車，並配合 overflow-y 滑動
         for (var i = 0; i < Math.min(busData.length, 8); i++) { 
             var bus = busData[i];
             html += '<div class="bus-item">';
