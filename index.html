@@ -75,7 +75,7 @@
         }
         .header-right { 
             text-align: right; 
-            max-width: 45%; /* 限制右側寬度避免文字太長蓋過中間 */
+            max-width: 50%; /* 放寬到 50%，給溫度更多空間 */
         }
         .header-right .temp-container {
             display: flex;
@@ -83,21 +83,21 @@
             justify-content: flex-end;
         }
         .header-right .current-emoji {
-            font-size: 3.5rem; /* 再稍微放大當前天氣圖案 */
-            margin-right: 12px;
+            font-size: 3.2rem; /* 稍微縮小圖示 */
+            margin-right: 10px;
         }
         .header-right .temp {
-            font-size: 4rem;
+            font-size: 3.8rem; /* 稍微縮小溫度數字 */
             font-weight: 200;
             line-height: 1;
             letter-spacing: -1px;
         }
         .header-right .weather-desc {
-            font-size: 1.1rem;
+            font-size: 1.05rem; /* 稍微縮小字體 */
             font-weight: 600;
             margin-top: 8px;
             line-height: 1.3;
-            /* 強制限制高度並隱藏溢出，取代舊版可能失效的 line-clamp */
+            /* 強制限制高度並隱藏溢出 */
             height: 2.6em; 
             overflow: hidden;
             white-space: normal;
@@ -526,8 +526,11 @@ var app = (function() {
         fetchJSON("https://data.weather.gov.hk/weatherAPI/opendata/weather.php?dataType=fnd&lang=tc", function(err, data) {
             if (!err && data) {
                 if (data.generalSituation) {
-                    // 解除 15 字限制，讓 CSS 控制兩行顯示
                     var desc = data.generalSituation.split("。")[0];
+                    // 在 JS 層級做文字截斷，視覺上更自然
+                    if (desc.length > 35) {
+                        desc = desc.substring(0, 35) + "...";
+                    }
                     document.getElementById("current-weather-desc").innerHTML = colorizeWeatherText(desc);
                 }
                 if (data.weatherForecast && data.weatherForecast.length > 0) {
